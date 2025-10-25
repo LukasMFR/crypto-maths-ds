@@ -60,7 +60,6 @@ def _print_table(header_vals, row_vals, cell_fn, title):
     w = _col_width(candidates)
 
     # en-tête
-    # case vide + barre
     first_cell = " " * w + "|"
     print(first_cell, end="")
     for j in header_vals:
@@ -78,6 +77,13 @@ def _print_table(header_vals, row_vals, cell_fn, title):
             v = cell_fn(i, j)
             print(str(v).rjust(w), end="")
         print()
+
+# ---------- gcd silencieux (pour Z_n*) ----------
+def gcd(a, b):
+    a = abs(a); b = abs(b)
+    while b:
+        a, b = b, a % b
+    return a
 
 # ---------- Euclide étendu avec traçage + remontée ----------
 def egcd_verbose(a, b, show=True, show_back=True):
@@ -225,7 +231,7 @@ def table_Z(start, end, op):
     _print_table(cols, rows, cell, title)
 
 def table_Zn(n, op):
-    """Tables en Z_n (0..n-1) pour op='+' ou '*'."""
+    """Tables en Z_n (0..n-1) pour op='+' ou '*' + affichage Z_n et Z_n*."""
     if n <= 0:
         print("Le module n doit être > 0")
         return
@@ -238,6 +244,15 @@ def table_Zn(n, op):
         cell = lambda i, j: (i * j) % n
         title = "Table de multiplication modulo {}".format(n)
     _print_table(cols, rows, cell, title)
+
+    # --- Ajout demandé : ensembles Z_n et Z_n* calculés ---
+    # Z_n = {0,1,2,...,n-1}
+    Zn_list = [i for i in range(n)]
+    print("\nZ_{} = {{ {} }}".format(n, ", ".join(str(x) for x in Zn_list)))
+
+    # Z_n* = { a in Z_n | gcd(a,n)=1 }
+    Zn_star = [a for a in range(n) if gcd(a, n) == 1]
+    print("Z_{}* = {{ {} }}".format(n, ", ".join(str(x) for x in Zn_star)))
 
 # ---------- Menu "one-shot" (pas de boucle) ----------
 def menu():
