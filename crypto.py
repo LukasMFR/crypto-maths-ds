@@ -5,6 +5,7 @@
 #  - Inverse mod m (avec étapes)
 #  - Résolution de ax ≡ b [m] (tous cas)
 #  Auteur : toi ;)
+#  Version menu "one-shot" (pas de boucle)
 # ================================================
 
 # ---------- Outils d'affichage ----------
@@ -61,8 +62,7 @@ def egcd_verbose(a, b, show=True, show_back=True):
         old_t, t = t, old_t - q * t
 
     g, x, y = old_r, old_s, old_t
-    # Indice du dernier rémanent non nul (g)
-    k = len(R) - 2  # car R[-1] == 0
+    k = len(R) - 2  # indice du dernier rémanent non nul
 
     if show:
         sep("Algorithme d'Euclide ({} , {})".format(A0, B0))
@@ -74,26 +74,20 @@ def egcd_verbose(a, b, show=True, show_back=True):
         sep("Remontée (combinaison linéaire)")
         # On part de : R[k] = R[k-2] - Q[k]*R[k-1]
         print("{} = {} - {}*{}".format(R[k], R[k-2], Q[k], R[k-1]))
-        # expr représente R[k] comme combinaison linéaire des R[i]
         expr = {k-2: 1, k-1: -Q[k]}
 
-        # Puis on remplace R[k-1], R[k-2], ..., jusqu’à n’avoir que a=R[0] et b=R[1]
+        # Remplacer R[k-1], R[k-2], ..., jusqu’à n’avoir que a=R[0] et b=R[1]
         for j in range(k-1, 1, -1):
             cj = expr.get(j, 0)
             if cj == 0:
                 continue
             # R[j] = R[j-2] - Q[j]*R[j-1]
             print("Remplacer {} par {} - {}*{}".format(R[j], R[j-2], Q[j], R[j-1]))
-
-            # Mise à jour de l'expression
             expr.pop(j, None)
             expr[j-2] = expr.get(j-2, 0) + cj
             expr[j-1] = expr.get(j-1, 0) - cj * Q[j]
-
-            # Afficher l'état courant
             print("=> {} = {}".format(R[k], _expr_to_string(expr, R)))
 
-        # À la fin, expr = {0:x, 1:y}
         x_back = expr.get(0, 0)
         y_back = expr.get(1, 0)
         print("Donc {} = {}*{} + {}*{}".format(g, x_back, A0, y_back, B0))
@@ -175,43 +169,38 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
 
     return True, x0, m1, d
 
-# ---------- Menu interactif (sans démo) ----------
+# ---------- Menu "one-shot" (pas de boucle) ----------
 def menu():
-    while True:
-        sep("MENU")
-        print("1) Bézout / pgcd (avec étapes + remontée)")
-        print("2) Inverse mod m (avec remontée)")
-        print("3) Résoudre a x ≡ b [m]")
-        print("0) Quitter")
-        choice = input("> Choix : ").strip()
+    sep("MENU")
+    print("1) Bézout / pgcd (avec étapes + remontée)")
+    print("2) Inverse mod m (avec remontée)")
+    print("3) Résoudre a x ≡ b [m]")
+    choice = input("> Choix : ").strip()
 
-        if choice == "1":
-            try:
-                a = int(input("a = "))
-                b = int(input("b = "))
-                egcd_verbose(a, b, show=True, show_back=True)
-            except:
-                print("Entrée invalide.")
-        elif choice == "2":
-            try:
-                a = int(input("a = "))
-                m = int(input("m = "))
-                inv_mod(a, m, show=True)
-            except:
-                print("Entrée invalide.")
-        elif choice == "3":
-            try:
-                a = int(input("a = "))
-                b = int(input("b = "))
-                m = int(input("m = "))
-                solve_congruence(a, b, m, show=True)
-            except:
-                print("Entrée invalide.")
-        elif choice == "0":
-            print("Bye.")
-            break
-        else:
-            print("Choix inconnu.")
+    if choice == "1":
+        try:
+            a = int(input("a = "))
+            b = int(input("b = "))
+            egcd_verbose(a, b, show=True, show_back=True)
+        except:
+            print("Entrée invalide.")
+    elif choice == "2":
+        try:
+            a = int(input("a = "))
+            m = int(input("m = "))
+            inv_mod(a, m, show=True)
+        except:
+            print("Entrée invalide.")
+    elif choice == "3":
+        try:
+            a = int(input("a = "))
+            b = int(input("b = "))
+            m = int(input("m = "))
+            solve_congruence(a, b, m, show=True)
+        except:
+            print("Entrée invalide.")
+    else:
+        print("Choix inconnu.")
 
-# ---------- Lancer ----------
+# ---------- Lancer (exécution unique) ----------
 menu()
