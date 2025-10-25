@@ -77,7 +77,7 @@ def egcd_verbose(a, b, show=True, show_back=True):
         # expr représente R[k] comme combinaison linéaire des R[i]
         expr = {k-2: 1, k-1: -Q[k]}
 
-        # Puis on remplace R[k-1], R[k-2], ..., jusqu'à n'avoir que a=R[0] et b=R[1]
+        # Puis on remplace R[k-1], R[k-2], ..., jusqu’à n’avoir que a=R[0] et b=R[1]
         for j in range(k-1, 1, -1):
             cj = expr.get(j, 0)
             if cj == 0:
@@ -90,15 +90,13 @@ def egcd_verbose(a, b, show=True, show_back=True):
             expr[j-2] = expr.get(j-2, 0) + cj
             expr[j-1] = expr.get(j-1, 0) - cj * Q[j]
 
-            # Afficher l'état courant (optionnel mais pratique)
+            # Afficher l'état courant
             print("=> {} = {}".format(R[k], _expr_to_string(expr, R)))
 
         # À la fin, expr = {0:x, 1:y}
         x_back = expr.get(0, 0)
         y_back = expr.get(1, 0)
         print("Donc {} = {}*{} + {}*{}".format(g, x_back, A0, y_back, B0))
-        # Par sécurité : x_back,y_back devraient égaler x,y de l'EGCD
-        # (ils peuvent différer par une écriture équivalente, mais la valeur est la même)
 
     if show:
         print("Coeffs de Bézout : x = {}, y = {}".format(x, y))
@@ -141,7 +139,7 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
 
     sep("Résolution de {} x ≡ {}  [ {} ]".format(a, b, m))
     # Étape 1 : gcd(a,m)
-    d, xg, yg = egcd_verbose(a, m, show=True, show_back=False)  # on montre déjà Euclide ici
+    d, xg, yg = egcd_verbose(a, m, show=True, show_back=False)
     if b % d != 0:
         print("Comme {} ne divise pas {}, aucune solution.".format(d, b))
         return False, None, None, d
@@ -153,7 +151,7 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
     print("On réduit : a'={}, b'={}, m'={} (d = {})".format(a1, b1, m1, d))
     print("Nouvelle équation : {} x ≡ {}  [ {} ]".format(a1, b1, m1))
 
-    # Étape 2 : inverse de a' modulo m' (avec remontée pour montrer le calcul)
+    # Étape 2 : inverse de a' modulo m' (avec remontée)
     ok, inv = inv_mod(a1, m1, show=True)
     if not ok:
         print("Problème inattendu : a' et m' ne sont pas copremiers.")
@@ -177,22 +175,13 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
 
     return True, x0, m1, d
 
-# ---------- Démo (les 4 équations du tableau) ----------
-def demo_board():
-    sep("Démo - Équations du tableau")
-    solve_congruence(4, 2, 7)
-    solve_congruence(6, 9, 15)
-    solve_congruence(42, 55, 77)
-    solve_congruence(7, 7, 49)
-
-# ---------- Menu interactif ----------
+# ---------- Menu interactif (sans démo) ----------
 def menu():
     while True:
         sep("MENU")
         print("1) Bézout / pgcd (avec étapes + remontée)")
         print("2) Inverse mod m (avec remontée)")
         print("3) Résoudre a x ≡ b [m]")
-        print("4) Démo (éqs du tableau)")
         print("0) Quitter")
         choice = input("> Choix : ").strip()
 
@@ -218,8 +207,6 @@ def menu():
                 solve_congruence(a, b, m, show=True)
             except:
                 print("Entrée invalide.")
-        elif choice == "4":
-            demo_board()
         elif choice == "0":
             print("Bye.")
             break
@@ -227,8 +214,4 @@ def menu():
             print("Choix inconnu.")
 
 # ---------- Lancer ----------
-DEMO = False  # mets True pour lancer la démo auto
-if DEMO:
-    demo_board()
-else:
-    menu()
+menu()
