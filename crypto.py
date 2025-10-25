@@ -1,6 +1,7 @@
 # ================================================
 #  Bézout, inverse modulaire et congruences (NumWorks)
 #  + Tables d'addition/multiplication en Z et Z_n
+#  + Équation affine ax + c = 0 dans Z_n
 #  - Euclide étendu pas à pas (traçage)
 #  - Remontée (substitutions inverses) pour Bézout
 #  - Inverse mod m (avec étapes)
@@ -185,6 +186,17 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
             print("Représentants (mod {}): {}".format(m, reps))
     return True, x0, m1, d
 
+# ---------- Équation affine ax + c = 0 dans Z_n ----------
+def solve_affine_eq(a, c, n, show=True):
+    """Résout a x + c = 0 dans Z_n (i.e. a x ≡ -c [n]) en affichant la transformation."""
+    sep("Équation {}x + {} = 0  [ {} ]".format(a, c, n))
+    if n <= 0:
+        print("Le module doit être > 0")
+        return False, None, None, None
+    b = (-c) % n
+    print("Réécriture : {}x ≡ -{} ≡ {}  [ {} ]".format(a, c, b, n))
+    return solve_congruence(a, b, n, show=show, list_rep=True)
+
 # ---------- Tables Z / Z_n ----------
 def table_Z(start, end, op):
     if start > end:
@@ -226,6 +238,7 @@ def menu():
     print("2) Inverse mod m (avec remontée)")
     print("3) Résoudre a x ≡ b [m]")
     print("4) Tables (Z / Z_n)")
+    print("5) Équation ax + c = 0 (Z_n)")
     choice = input("> Choix : ").strip()
 
     if choice == "1":
@@ -285,6 +298,15 @@ def menu():
                 do_ops(do_add, do_mul, False, True)
             else:
                 print("Choix d'espace invalide.")
+        except:
+            print("Entrée invalide.")
+    elif choice == "5":
+        try:
+            print("Résoudre a x + c = 0 dans Z_n :")
+            n = int(input("  n (module > 0) = "))
+            a = int(input("  a = "))
+            c = int(input("  c = "))
+            solve_affine_eq(a, c, n, show=True)
         except:
             print("Entrée invalide.")
     else:
