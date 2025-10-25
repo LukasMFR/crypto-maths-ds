@@ -1,12 +1,11 @@
 # ================================================
 #  Bézout, inverse modulaire et congruences (NumWorks)
-#  + Tables d'addition/multiplication en Z et Z_n
+#  + Tables d'addition/multiplication en Z et Z_n (+ Z_n et Z_n*)
 #  + Équation affine ax + c = 0 dans Z_n
-#  - Euclide étendu pas à pas (traçage)
-#  - Remontée (substitutions inverses) pour Bézout
+#  + Cours (formules utiles)
+#  - Euclide étendu pas à pas (traçage) + remontée
 #  - Inverse mod m (avec étapes)
 #  - Résolution de ax ≡ b [m] (tous cas)
-#  - Tables (Z / Z_n) addition & multiplication + Z_n et Z_n*
 #  Auteur : toi ;)
 #  Version menu "one-shot" (pas de boucle)
 # ================================================
@@ -188,7 +187,6 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
 
 # ---------- Équation affine ax + c = 0 dans Z_n ----------
 def solve_affine_eq(a, c, n, show=True):
-    """Résout a x + c = 0 dans Z_n (i.e. a x ≡ -c [n]) en affichant la transformation."""
     sep("Équation {}x + {} = 0  [ {} ]".format(a, c, n))
     if n <= 0:
         print("Le module doit être > 0")
@@ -231,6 +229,37 @@ def table_Zn(n, op):
     Zn_star = [a for a in range(n) if gcd(a, n) == 1]
     print("Z_{}* = {{ {} }}".format(n, ", ".join([str(x) for x in Zn_star])))
 
+# ---------- Cours (formules utiles) ----------
+def show_course():
+    sep("Cours - Formules utiles")
+    print("Euclide & Bézout :")
+    print("  - pgcd(a,b) = g ; ∃ x,y : a*x + b*y = g")
+    print("  - Si g = 1 alors a et b sont premiers entre eux")
+
+    print("\nInverse modulo m :")
+    print("  - Existe ssi gcd(a,m) = 1 ; unique modulo m")
+    print("  - Calcul : Euclide étendu (coeff de Bézout)")
+    print("  - Si p premier : pour a != 0, a^(p-1) ≡ 1 [p] et a^(-1) ≡ a^(p-2) [p]")
+
+    print("\nRésoudre a*x ≡ b [m] :")
+    print("  - d = gcd(a,m)")
+    print("  - Si d ∤ b : pas de solution")
+    print("  - Sinon : a' = a/d, b' = b/d, m' = m/d")
+    print("             x ≡ (a'^(-1) * b') [m'] ; nombre de solutions = d (mod m)")
+
+    print("\nAnneaux Z_n :")
+    print("  - Z_n = {0,1,...,n-1}")
+    print("  - Z_n* = {a in Z_n : gcd(a,n)=1} (les unités)")
+    print("  - |Z_n*| = phi(n) ; si p premier : |Z_p*| = p-1 et Z_p est un corps")
+
+    print("\nPuissances (Euler/Fermat) :")
+    print("  - Si gcd(a,n)=1 : a^(phi(n)) ≡ 1 [n]")
+    print("  - Si p premier : a^(p-1) ≡ 1 [p] (a != 0 [p])")
+
+    print("\nRappel CRT (th. des restes chinois) :")
+    print("  - Si m1,m2 copremiers :")
+    print("    x ≡ a1 [m1], x ≡ a2 [m2] ⇒ solution unique modulo m1*m2")
+
 # ---------- Menu "one-shot" ----------
 def menu():
     sep("MENU")
@@ -239,6 +268,7 @@ def menu():
     print("3) Résoudre a x ≡ b [m]")
     print("4) Tables (Z / Z_n)")
     print("5) Équation ax + c = 0 (Z_n)")
+    print("6) Cours (formules utiles)")
     choice = input("> Choix : ").strip()
 
     if choice == "1":
@@ -309,6 +339,8 @@ def menu():
             solve_affine_eq(a, c, n, show=True)
         except:
             print("Entrée invalide.")
+    elif choice == "6":
+        show_course()
     else:
         print("Choix inconnu.")
 
