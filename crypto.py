@@ -1,9 +1,11 @@
 # ================================================
 #  Bézout, inverse modulaire et congruences (NumWorks)
+#  + Tables d'addition/multiplication en Z et Z_n
 #  - Euclide étendu pas à pas (traçage)
 #  - Remontée (substitutions inverses) pour Bézout
 #  - Inverse mod m (avec étapes)
 #  - Résolution de ax ≡ b [m] (tous cas)
+#  - Tables (Z / Z_n) addition & multiplication
 #  Auteur : toi ;)
 #  Version menu "one-shot" (pas de boucle)
 # ================================================
@@ -34,6 +36,48 @@ def _expr_to_string(expr, R):
     if not terms:
         return "0"
     return " + ".join(terms)
+
+def _col_width(values):
+    w = 1
+    for v in values:
+        l = len(str(v))
+        if l > w:
+            w = l
+    return w + 1  # petite marge
+
+def _print_table(header_vals, row_vals, cell_fn, title):
+    """Affiche un tableau avec en-tête/étiquettes de ligne.
+       header_vals: liste des colonnes
+       row_vals:    liste des lignes
+       cell_fn(i,j): valeur à afficher
+    """
+    sep(title)
+    # calcul largeur colonne à partir de TOUT ce qui s'affiche
+    candidates = list(header_vals) + list(row_vals)
+    for i in row_vals:
+        for j in header_vals:
+            candidates.append(cell_fn(i, j))
+    w = _col_width(candidates)
+
+    # en-tête
+    # case vide + barre
+    first_cell = " " * w + "|"
+    print(first_cell, end="")
+    for j in header_vals:
+        s = str(j)
+        print(s.rjust(w), end="")
+    print()
+
+    # séparation
+    print("-" * (w + 1 + w * len(header_vals)))
+
+    # lignes
+    for i in row_vals:
+        print(str(i).rjust(w) + "|", end="")
+        for j in header_vals:
+            v = cell_fn(i, j)
+            print(str(v).rjust(w), end="")
+        print()
 
 # ---------- Euclide étendu avec traçage + remontée ----------
 def egcd_verbose(a, b, show=True, show_back=True):
@@ -72,16 +116,13 @@ def egcd_verbose(a, b, show=True, show_back=True):
     # ----- Remontée : substitutions inverses pour exprimer g en fct de a,b -----
     if show and show_back and k >= 2:
         sep("Remontée (combinaison linéaire)")
-        # On part de : R[k] = R[k-2] - Q[k]*R[k-1]
         print("{} = {} - {}*{}".format(R[k], R[k-2], Q[k], R[k-1]))
         expr = {k-2: 1, k-1: -Q[k]}
 
-        # Remplacer R[k-1], R[k-2], ..., jusqu’à n’avoir que a=R[0] et b=R[1]
         for j in range(k-1, 1, -1):
             cj = expr.get(j, 0)
             if cj == 0:
                 continue
-            # R[j] = R[j-2] - Q[j]*R[j-1]
             print("Remplacer {} par {} - {}*{}".format(R[j], R[j-2], Q[j], R[j-1]))
             expr.pop(j, None)
             expr[j-2] = expr.get(j-2, 0) + cj
@@ -156,7 +197,6 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
     print("Vérif : ({}*{}) % {} = {}  (doit ≡ {})"
           .format(a, x0, m, (a*x0) % m, b % m))
 
-    # Forme générale
     print("Forme générale des solutions : x ≡ {}  [ {} ]".format(x0, m1))
     if d > 1:
         print("Donc modulo {}, on obtient {} solutions distinctes :".format(m, d))
@@ -169,12 +209,43 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
 
     return True, x0, m1, d
 
+# ---------- Tables Z / Z_n ----------
+def table_Z(start, end, op):
+    """Tables en Z (sur [start..end]) pour op='+' ou '*'."""
+    if start > end:
+        start, end = end, start
+    rows = list(range(start, end + 1))
+    cols = list(range(start, end + 1))
+    if op == "+":
+        cell = lambda i, j: i + j
+        title = "Table d'addition en Z, [{}..{}]".format(start, end)
+    else:
+        cell = lambda i, j: i * j
+        title = "Table de multiplication en Z, [{}..{}]".format(start, end)
+    _print_table(cols, rows, cell, title)
+
+def table_Zn(n, op):
+    """Tables en Z_n (0..n-1) pour op='+' ou '*'."""
+    if n <= 0:
+        print("Le module n doit être > 0")
+        return
+    rows = list(range(0, n))
+    cols = list(range(0, n))
+    if op == "+":
+        cell = lambda i, j: (i + j) % n
+        title = "Table d'addition modulo {}".format(n)
+    else:
+        cell = lambda i, j: (i * j) % n
+        title = "Table de multiplication modulo {}".format(n)
+    _print_table(cols, rows, cell, title)
+
 # ---------- Menu "one-shot" (pas de boucle) ----------
 def menu():
     sep("MENU")
     print("1) Bézout / pgcd (avec étapes + remontée)")
     print("2) Inverse mod m (avec remontée)")
     print("3) Résoudre a x ≡ b [m]")
+    print("4) Tables (Z / Z_n)")
     choice = input("> Choix : ").strip()
 
     if choice == "1":
@@ -197,6 +268,33 @@ def menu():
             b = int(input("b = "))
             m = int(input("m = "))
             solve_congruence(a, b, m, show=True)
+        except:
+            print("Entrée invalide.")
+    elif choice == "4":
+        try:
+            sep("Tables (Z / Z_n)")
+            space = input("Espace ? 1=Z, 2=Z_n : ").strip()
+            op_ch = input("Opération ? 1=addition, 2=multiplication, 3=les deux : ").strip()
+            def do_ops(do_add, do_mul, in_Z, in_Zn):
+                if in_Z:
+                    s = int(input("Intervalle Z : début = "))
+                    e = int(input("Intervalle Z : fin   = "))
+                    if do_add: table_Z(s, e, "+")
+                    if do_mul: table_Z(s, e, "*")
+                else:
+                    n = int(input("Module n (>0) : "))
+                    if do_add: table_Zn(n, "+")
+                    if do_mul: table_Zn(n, "*")
+
+            do_add = (op_ch == "1" or op_ch == "3")
+            do_mul = (op_ch == "2" or op_ch == "3")
+
+            if space == "1":
+                do_ops(do_add, do_mul, True, False)
+            elif space == "2":
+                do_ops(do_add, do_mul, False, True)
+            else:
+                print("Choix d'espace invalide.")
         except:
             print("Entrée invalide.")
     else:
