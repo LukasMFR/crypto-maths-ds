@@ -229,6 +229,176 @@ def table_Zn(n, op):
     Zn_star = [a for a in range(n) if gcd(a, n) == 1]
     print("Z_{}* = {{ {} }}".format(n, ", ".join([str(x) for x in Zn_star])))
 
+# ---------- Fusion de deux congruences ----------
+def combine_two_congruences(a1, m1, a2, m2):
+    """
+    Combine x ≡ a1 [m1] et x ≡ a2 [m2].
+    Retourne (ok, a, M) avec x ≡ a [M], ou (False, None, None) si incompatible.
+    Affiche les étapes (Euclide sur m1,m2 puis résolution).
+    """
+    sep("Combinaison de deux congruences")
+    print("x ≡ {}  [ {} ]".format(a1, m1))
+    print("x ≡ {}  [ {} ]".format(a2, m2))
+
+    # Étape 1 : d = gcd(m1,m2)
+    d, _, _ = egcd_verbose(m1, m2, show=True, show_back=False)
+
+    # Compatibilité
+    diff = (a2 - a1)
+    if diff % d != 0:
+        print("Incompatible : {} ne divise pas ({}-{}).".format(d, a2, a1))
+        return False, None, None
+
+    # Étape 2 : résoudre m1' * t ≡ (a2-a1)' [m2']
+    m1p = m1 // d
+    m2p = m2 // d
+    rhs = diff // d
+    sep("Réduction pour trouver t")
+    print("On résout : {} * t ≡ {}  [ {} ]".format(m1p, rhs, m2p))
+    ok, t0, mod_t, d_t = solve_congruence(m1p, rhs, m2p, show=True, list_rep=False)
+    if not ok:
+        print("Échec inattendu sur la congruence réduite.")
+        return False, None, None
+
+    # Étape 3 : solution combinée
+    M = (m1 // d) * m2
+    a = (a1 + m1 * t0) % M
+    sep("Solution combinée")
+    print("x ≡ {}  [ {} ]".format(a, M))
+    return True, a, M
+
+
+# ---------- (6) Système modulaire : fusion 2 à 2 ----------
+def solve_system_modular():
+    """
+    Demande k cong. x ≡ ai [mi] et les fusionne 2 à 2 (cas général).
+    """
+    sep("Système modulaire (général)")
+    k = int(input("Nombre d'équations k = "))
+    if k <= 0:
+        print("k doit être >= 1")
+        return
+    residues = []
+    moduli = []
+    for i in range(1, k+1):
+        print("Equation #{} :".format(i))
+        ai = int(input("  a{} = ".format(i)))
+        mi = int(input("  m{} (>0) = ".format(i)))
+        if mi <= 0:
+            print("Module > 0 requis.")
+            return
+        ai = ai % mi
+        residues.append(ai)
+        moduli.append(mi)
+
+    # Fusion progressive
+    cur_a = residues[0]
+    cur_m = moduli[0]
+    for i in range(1, k):
+        ok, new_a, new_m = combine_two_congruences(cur_a, cur_m, residues[i], moduli[i])
+        if not ok:
+            print("=> Système SANS solution.")
+            return
+        cur_a, cur_m = new_a, new_m
+
+    sep("Solution du système")
+    print("x ≡ {}  [ {} ]".format(cur_a, cur_m))
+
+
+# ---------- (7) CRT pour moduli copremiers ----------
+def solve_system_crt_coprime():
+    """
+    Demande k cong. x ≡ ai [mi] avec mi deux à deux copremiers.
+    Construit x via la méthode CRT (M_i, inverses), avec étapes.
+    """
+    sep("CRT (moduli copremiers)")
+    k = int(input("Nombre d'équations k = "))
+    if k <= 0:
+        print("k doit être >= 1")
+        return
+    residues = []
+    moduli = []
+    for i in range(1, k+1):
+        print("Equation #{} :".format(i))
+        ai = int(input("  a{} = ".format(i)))
+        mi = int(input("  m{} (>0) = ".format(i)))
+        if mi <= 0:
+            print("Module > 0 requis.")
+            return
+        ai = ai % mi
+        residues.append(ai)
+        moduli.append(mi)
+
+    # Vérif coprimalité par paires
+    for i in range(k):
+        for j in range(i+1, k):
+            if gcd(moduli[i], moduli[j]) != 1:
+                print("Moduli NON copremiers (m{}={}, m{}={}).".format(i+1, moduli[i], j+1, moduli[j]))
+                print("Utilise l'option (6) Système modulaire (cas général).")
+                return
+
+    # Produit total
+    M = 1
+    for mi in moduli:
+        M *= mi
+    sep("Construction CRT")
+    print("M = produit des modules = {}".format(M))
+
+    total = 0
+    for i in range(k):
+        mi = moduli[i]
+        ai = residues[i]
+        Mi = M // mi
+        print("\nÉquation #{} : x ≡ {} [ {} ]".format(i+1, ai, mi))
+        print("M{} = M / m{} = {}".format(i+1, i+1, Mi))
+        ok, inv = inv_mod(Mi, mi, show=True)
+        if not ok:
+            print("Impossible de trouver l'inverse (devrait être possible ici).")
+            return
+        term = (ai * inv * Mi) % M
+        print("Terme #{} = a{} * (M{})^(-1) * M{} = {} (mod M)".format(i+1, i+1, i+1, i+1, term))
+        total = (total + term) % M
+
+    sep("Solution CRT")
+    print("x ≡ {}  [ {} ]".format(total, M))
+
+
+# ---------- (8) Puissance mod m (exponentiation rapide) ----------
+def pow_mod_verbose(a, k, m):
+    """
+    Calcule a^k mod m par carré-multiplication avec étapes.
+    k >= 0, m > 0.
+    """
+    sep("Puissance modulaire")
+    if m <= 0:
+        print("Le module doit être > 0")
+        return
+    if k < 0:
+        print("Exposant k négatif non pris en charge.")
+        return
+
+    a0 = a % m
+    res = 1 % m
+    base = a0
+    exp = k
+    i = 0
+
+    print("Objectif : {}^{} (mod {})".format(a, k, m))
+    print("Init : res = 1, base = {}, exp = {}".format(base, exp))
+
+    while exp > 0:
+        bit = exp & 1
+        if bit == 1:
+            res = (res * base) % m
+            print("bit {} = 1 -> res = res*base mod m = {}".format(i, res))
+        base = (base * base) % m
+        exp //= 2
+        print("  base = base^2 mod m = {}, exp -> {}".format(base, exp))
+        i += 1
+
+    sep("Résultat")
+    print("{}^{} (mod {}) = {}".format(a, k, m, res))
+
 # ---------- Cours (formules utiles) : version NumWorks-friendly ----------
 def show_course():
     sep("Cours - Choisir une fiche")
@@ -283,6 +453,7 @@ def show_course():
         print("Choix inconnu.")
 
 # ---------- Menu "one-shot" ----------
+# ---------- Menu "one-shot" ----------
 def menu():
     sep("MENU")
     print("1) Bézout / pgcd (avec étapes + remontée)")
@@ -290,7 +461,10 @@ def menu():
     print("3) Résoudre a x ≡ b [m]")
     print("4) Tables (Z / Z_n)")
     print("5) Équation ax + c = 0 (Z_n)")
-    print("6) Cours (formules utiles)")
+    print("6) Système modulaire (x ≡ a_i [m_i])")
+    print("7) Chinois (moduli coprimes)")
+    print("8) Puissance mod m")
+    print("9) Cours (formules utiles)")
     choice = input("> Choix : ").strip()
 
     if choice == "1":
@@ -362,6 +536,24 @@ def menu():
         except:
             print("Entrée invalide.")
     elif choice == "6":
+        try:
+            solve_system_modular()
+        except:
+            print("Entrée invalide.")
+    elif choice == "7":
+        try:
+            solve_system_crt_coprime()
+        except:
+            print("Entrée invalide.")
+    elif choice == "8":
+        try:
+            a = int(input("a = "))
+            k = int(input("k (exposant) = "))
+            m = int(input("m (module > 0) = "))
+            pow_mod_verbose(a, k, m)
+        except:
+            print("Entrée invalide.")
+    elif choice == "9":
         show_course()
     else:
         print("Choix inconnu.")
