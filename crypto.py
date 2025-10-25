@@ -245,14 +245,12 @@ def table_Zn(n, op):
         title = "Table de multiplication modulo {}".format(n)
     _print_table(cols, rows, cell, title)
 
-    # --- Ajout demandé : ensembles Z_n et Z_n* calculés ---
-    # Z_n = {0,1,2,...,n-1}
+    # --- Ensembles Z_n et Z_n* (avec list comprehensions pour NumWorks) ---
     Zn_list = [i for i in range(n)]
-    print("\nZ_{} = {{ {} }}".format(n, ", ".join(str(x) for x in Zn_list)))
+    print("\nZ_{} = {{ {} }}".format(n, ", ".join([str(x) for x in Zn_list])))
 
-    # Z_n* = { a in Z_n | gcd(a,n)=1 }
     Zn_star = [a for a in range(n) if gcd(a, n) == 1]
-    print("Z_{}* = {{ {} }}".format(n, ", ".join(str(x) for x in Zn_star)))
+    print("Z_{}* = {{ {} }}".format(n, ", ".join([str(x) for x in Zn_star])))
 
 # ---------- Menu "one-shot" (pas de boucle) ----------
 def menu():
@@ -288,12 +286,23 @@ def menu():
     elif choice == "4":
         try:
             sep("Tables (Z / Z_n)")
-            space = input("Espace ? 1=Z, 2=Z_n : ").strip()
-            op_ch = input("Opération ? 1=addition, 2=multiplication, 3=les deux : ").strip()
+            # --- PROMPTS MULTILIGNES (lisibles sur NumWorks) ---
+            print("Espace ?")
+            print("  1 = Z (entiers)")
+            print("  2 = Z_n (modulo n)")
+            space = input("> Choix espace : ").strip()
+
+            print("Opération ?")
+            print("  1 = addition")
+            print("  2 = multiplication")
+            print("  3 = les deux")
+            op_ch = input("> Choix opération : ").strip()
+
             def do_ops(do_add, do_mul, in_Z, in_Zn):
                 if in_Z:
-                    s = int(input("Intervalle Z : début = "))
-                    e = int(input("Intervalle Z : fin   = "))
+                    print("Intervalle en Z :")
+                    s = int(input("  début = "))
+                    e = int(input("  fin   = "))
                     if do_add: table_Z(s, e, "+")
                     if do_mul: table_Z(s, e, "*")
                 else:
