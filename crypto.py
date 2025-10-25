@@ -5,7 +5,7 @@
 #  - Remontée (substitutions inverses) pour Bézout
 #  - Inverse mod m (avec étapes)
 #  - Résolution de ax ≡ b [m] (tous cas)
-#  - Tables (Z / Z_n) addition & multiplication
+#  - Tables (Z / Z_n) addition & multiplication + Z_n et Z_n*
 #  Auteur : toi ;)
 #  Version menu "one-shot" (pas de boucle)
 # ================================================
@@ -21,13 +21,10 @@ def sep(title=None):
         print("\n" + line)
 
 def show_divisions(divs):
-    # divs : liste de tuples (A, B, q, r) pour "A = q*B + r"
     for (A, B, q, r) in divs:
         print("{} = {}*{} + {}".format(A, q, B, r))
 
 def _expr_to_string(expr, R):
-    # expr : dict {index -> coeff} sur les rémanents R[i]
-    # R[0]=a, R[1]=b, R[2]=..., R[k]=g, R[k+1]=0
     terms = []
     for i in range(len(R)):
         c = expr.get(i, 0)
@@ -36,6 +33,14 @@ def _expr_to_string(expr, R):
     if not terms:
         return "0"
     return " + ".join(terms)
+
+# --- remplaçant rjust (compat MicroPython NumWorks) ---
+def _rjust(val, w):
+    s = str(val)
+    L = len(s)
+    if L < w:
+        return " " * (w - L) + s
+    return s
 
 def _col_width(values):
     w = 1
@@ -46,13 +51,7 @@ def _col_width(values):
     return w + 1  # petite marge
 
 def _print_table(header_vals, row_vals, cell_fn, title):
-    """Affiche un tableau avec en-tête/étiquettes de ligne.
-       header_vals: liste des colonnes
-       row_vals:    liste des lignes
-       cell_fn(i,j): valeur à afficher
-    """
     sep(title)
-    # calcul largeur colonne à partir de TOUT ce qui s'affiche
     candidates = list(header_vals) + list(row_vals)
     for i in row_vals:
         for j in header_vals:
@@ -63,8 +62,7 @@ def _print_table(header_vals, row_vals, cell_fn, title):
     first_cell = " " * w + "|"
     print(first_cell, end="")
     for j in header_vals:
-        s = str(j)
-        print(s.rjust(w), end="")
+        print(_rjust(j, w), end="")
     print()
 
     # séparation
@@ -72,10 +70,10 @@ def _print_table(header_vals, row_vals, cell_fn, title):
 
     # lignes
     for i in row_vals:
-        print(str(i).rjust(w) + "|", end="")
+        print(_rjust(i, w) + "|", end="")
         for j in header_vals:
             v = cell_fn(i, j)
-            print(str(v).rjust(w), end="")
+            print(_rjust(v, w), end="")
         print()
 
 # ---------- gcd silencieux (pour Z_n*) ----------
@@ -87,15 +85,11 @@ def gcd(a, b):
 
 # ---------- Euclide étendu avec traçage + remontée ----------
 def egcd_verbose(a, b, show=True, show_back=True):
-    """Retourne (g,x,y) avec g=gcd(a,b) et ax+by=g.
-       Affiche divisions d'Euclide et, si show_back, la remontée (substitutions)."""
-
     A0, B0 = a, b
-    divs = []      # tuples (old_r, r, q, rem) pour "old_r = q*r + rem"
-    R = [a, b]     # suite des rémanents R[0]=a, R[1]=b, R[2]=rem1, ..., R[-1]=0
-    Q = [None, None]  # Q[i] tel que R[i] = R[i-2] - Q[i]*R[i-1] (pour i>=2)
+    divs = []
+    R = [a, b]
+    Q = [None, None]
 
-    # Variables pour EGCD (coefficients s,t)
     old_r, r = a, b
     old_s, s = 1, 0
     old_t, t = 0, 1
@@ -106,25 +100,22 @@ def egcd_verbose(a, b, show=True, show_back=True):
         divs.append((old_r, r, q, rem))
         R.append(rem)
         Q.append(q)
-
         old_r, r = r, rem
         old_s, s = s, old_s - q * s
         old_t, t = t, old_t - q * t
 
     g, x, y = old_r, old_s, old_t
-    k = len(R) - 2  # indice du dernier rémanent non nul
+    k = len(R) - 2
 
     if show:
         sep("Algorithme d'Euclide ({} , {})".format(A0, B0))
         show_divisions(divs)
         print("pgcd({}, {}) = {}".format(A0, B0, g))
 
-    # ----- Remontée : substitutions inverses pour exprimer g en fct de a,b -----
     if show and show_back and k >= 2:
         sep("Remontée (combinaison linéaire)")
         print("{} = {} - {}*{}".format(R[k], R[k-2], Q[k], R[k-1]))
         expr = {k-2: 1, k-1: -Q[k]}
-
         for j in range(k-1, 1, -1):
             cj = expr.get(j, 0)
             if cj == 0:
@@ -134,7 +125,6 @@ def egcd_verbose(a, b, show=True, show_back=True):
             expr[j-2] = expr.get(j-2, 0) + cj
             expr[j-1] = expr.get(j-1, 0) - cj * Q[j]
             print("=> {} = {}".format(R[k], _expr_to_string(expr, R)))
-
         x_back = expr.get(0, 0)
         y_back = expr.get(1, 0)
         print("Donc {} = {}*{} + {}*{}".format(g, x_back, A0, y_back, B0))
@@ -142,26 +132,20 @@ def egcd_verbose(a, b, show=True, show_back=True):
     if show:
         print("Coeffs de Bézout : x = {}, y = {}".format(x, y))
         print("Vérif : {}*{} + {}*{} = {}".format(A0, x, B0, y, A0*x + B0*y))
-
     return g, x, y
 
 # ---------- Inverse modulaire ----------
 def inv_mod(a, m, show=True):
-    """Inverse de a modulo m si gcd(a,m)=1.
-       Retourne (has_inverse, inverse_mod_m)"""
     if m <= 0:
         if show:
             print("Le module doit être > 0")
         return False, None
-
-    # On affiche Euclide + remontée pour bien montrer les étapes
     g, x, y = egcd_verbose(a, m, show=show, show_back=True)
     if g != 1:
         if show:
             sep("Inverse modulaire")
             print("gcd({}, {}) = {} ≠ 1 : pas d'inverse modulo {}.".format(a, m, g, m))
         return False, None
-
     inv = x % m
     if show:
         sep("Inverse mod {}".format(m))
@@ -171,38 +155,25 @@ def inv_mod(a, m, show=True):
 
 # ---------- Résolution a x ≡ b [m] ----------
 def solve_congruence(a, b, m, show=True, list_rep=True):
-    """Résout a x ≡ b (mod m) en affichant les étapes.
-       Retourne (has_solution, x0, modulus_reduced, d)."""
     if m <= 0:
         if show:
             print("Le module doit être > 0")
         return False, None, None, None
-
     sep("Résolution de {} x ≡ {}  [ {} ]".format(a, b, m))
-    # Étape 1 : gcd(a,m)
     d, xg, yg = egcd_verbose(a, m, show=True, show_back=False)
     if b % d != 0:
         print("Comme {} ne divise pas {}, aucune solution.".format(d, b))
         return False, None, None, d
-
-    # Réduction
-    a1 = a // d
-    b1 = b // d
-    m1 = m // d
+    a1 = a // d; b1 = b // d; m1 = m // d
     print("On réduit : a'={}, b'={}, m'={} (d = {})".format(a1, b1, m1, d))
     print("Nouvelle équation : {} x ≡ {}  [ {} ]".format(a1, b1, m1))
-
-    # Étape 2 : inverse de a' modulo m' (avec remontée)
     ok, inv = inv_mod(a1, m1, show=True)
     if not ok:
         print("Problème inattendu : a' et m' ne sont pas copremiers.")
         return False, None, None, d
-
     x0 = (inv * b1) % m1
     print("Solution de base : x0 ≡ {} * {} ≡ {}  [ {} ]".format(inv, b1, x0, m1))
-    print("Vérif : ({}*{}) % {} = {}  (doit ≡ {})"
-          .format(a, x0, m, (a*x0) % m, b % m))
-
+    print("Vérif : ({}*{}) % {} = {}  (doit ≡ {})".format(a, x0, m, (a*x0) % m, b % m))
     print("Forme générale des solutions : x ≡ {}  [ {} ]".format(x0, m1))
     if d > 1:
         print("Donc modulo {}, on obtient {} solutions distinctes :".format(m, d))
@@ -212,12 +183,10 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
         reps = sorted(list(set(reps)))
         if list_rep:
             print("Représentants (mod {}): {}".format(m, reps))
-
     return True, x0, m1, d
 
 # ---------- Tables Z / Z_n ----------
 def table_Z(start, end, op):
-    """Tables en Z (sur [start..end]) pour op='+' ou '*'."""
     if start > end:
         start, end = end, start
     rows = list(range(start, end + 1))
@@ -231,7 +200,6 @@ def table_Z(start, end, op):
     _print_table(cols, rows, cell, title)
 
 def table_Zn(n, op):
-    """Tables en Z_n (0..n-1) pour op='+' ou '*' + affichage Z_n et Z_n*."""
     if n <= 0:
         print("Le module n doit être > 0")
         return
@@ -245,14 +213,13 @@ def table_Zn(n, op):
         title = "Table de multiplication modulo {}".format(n)
     _print_table(cols, rows, cell, title)
 
-    # --- Ensembles Z_n et Z_n* (avec list comprehensions pour NumWorks) ---
+    # Ensembles Z_n et Z_n*
     Zn_list = [i for i in range(n)]
     print("\nZ_{} = {{ {} }}".format(n, ", ".join([str(x) for x in Zn_list])))
-
     Zn_star = [a for a in range(n) if gcd(a, n) == 1]
     print("Z_{}* = {{ {} }}".format(n, ", ".join([str(x) for x in Zn_star])))
 
-# ---------- Menu "one-shot" (pas de boucle) ----------
+# ---------- Menu "one-shot" ----------
 def menu():
     sep("MENU")
     print("1) Bézout / pgcd (avec étapes + remontée)")
@@ -286,7 +253,6 @@ def menu():
     elif choice == "4":
         try:
             sep("Tables (Z / Z_n)")
-            # --- PROMPTS MULTILIGNES (lisibles sur NumWorks) ---
             print("Espace ?")
             print("  1 = Z (entiers)")
             print("  2 = Z_n (modulo n)")
@@ -324,5 +290,5 @@ def menu():
     else:
         print("Choix inconnu.")
 
-# ---------- Lancer (exécution unique) ----------
+# ---------- Lancer ----------
 menu()
