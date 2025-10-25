@@ -229,36 +229,58 @@ def table_Zn(n, op):
     Zn_star = [a for a in range(n) if gcd(a, n) == 1]
     print("Z_{}* = {{ {} }}".format(n, ", ".join([str(x) for x in Zn_star])))
 
-# ---------- Cours (formules utiles) ----------
+# ---------- Cours (formules utiles) : version NumWorks-friendly ----------
 def show_course():
-    sep("Cours - Formules utiles")
-    print("Euclide & Bézout :")
-    print("  - pgcd(a,b) = g ; ∃ x,y : a*x + b*y = g")
-    print("  - Si g = 1 alors a et b sont premiers entre eux")
+    sep("Cours - Choisir une fiche")
+    print("1) Euclide & Bezout")
+    print("2) Inverse mod m")
+    print("3) ax mod m = b")
+    print("4) Zn et Zn*")
+    print("5) Puissances mod")
+    print("6) CRT (restes chinois)")
+    ch = input("> Choix : ").strip()
 
-    print("\nInverse modulo m :")
-    print("  - Existe ssi gcd(a,m) = 1 ; unique modulo m")
-    print("  - Calcul : Euclide étendu (coeff de Bézout)")
-    print("  - Si p premier : pour a != 0, a^(p-1) ≡ 1 [p] et a^(-1) ≡ a^(p-2) [p]")
-
-    print("\nRésoudre a*x ≡ b [m] :")
-    print("  - d = gcd(a,m)")
-    print("  - Si d ∤ b : pas de solution")
-    print("  - Sinon : a' = a/d, b' = b/d, m' = m/d")
-    print("             x ≡ (a'^(-1) * b') [m'] ; nombre de solutions = d (mod m)")
-
-    print("\nAnneaux Z_n :")
-    print("  - Z_n = {0,1,...,n-1}")
-    print("  - Z_n* = {a in Z_n : gcd(a,n)=1} (les unités)")
-    print("  - |Z_n*| = phi(n) ; si p premier : |Z_p*| = p-1 et Z_p est un corps")
-
-    print("\nPuissances (Euler/Fermat) :")
-    print("  - Si gcd(a,n)=1 : a^(phi(n)) ≡ 1 [n]")
-    print("  - Si p premier : a^(p-1) ≡ 1 [p] (a != 0 [p])")
-
-    print("\nRappel CRT (th. des restes chinois) :")
-    print("  - Si m1,m2 copremiers :")
-    print("    x ≡ a1 [m1], x ≡ a2 [m2] ⇒ solution unique modulo m1*m2")
+    sep("Fiche")
+    if ch == "1":
+        print("Euclide & Bezout")
+        print("- gcd(a,b)=g")
+        print("- il existe x,y : a*x+b*y=g")
+        print("- si g=1 => a,b copremiers")
+    elif ch == "2":
+        print("Inverse modulo m")
+        print("- existe ssi gcd(a,m)=1")
+        print("- calcul: Euclide etendu")
+        print("- si p premier:")
+        print("  a^(p-1) mod p = 1")
+        print("  a^(-1) mod p = a^(p-2)")
+    elif ch == "3":
+        print("Resoudre ax mod m = b")
+        print("- d=gcd(a,m)")
+        print("- si d ne divise pas b -> 0 sol")
+        print("- sinon: a'=a/d, b'=b/d, m'=m/d")
+        print("- x0 = inv(a',m')*b' mod m'")
+        print("- solutions: x = x0 mod m'")
+        print("- nb de classes mod m: d")
+    elif ch == "4":
+        print("Zn et Zn*")
+        print("- Zn = {0..n-1}")
+        print("- Zn* = {a in Zn : gcd(a,n)=1}")
+        print("- |Zn*| = phi(n)")
+        print("- si p premier: |Zp*|=p-1")
+        print("- Zp est un corps")
+    elif ch == "5":
+        print("Puissances modulo n")
+        print("- si gcd(a,n)=1 :")
+        print("  a^phi(n) mod n = 1")
+        print("- si p premier :")
+        print("  a^(p-1) mod p = 1 (a!=0 mod p)")
+    elif ch == "6":
+        print("CRT (restes chinois)")
+        print("- si m1,m2 copremiers :")
+        print("  x=a1 (mod m1) et x=a2 (mod m2)")
+        print("  => solution unique mod m1*m2")
+    else:
+        print("Choix inconnu.")
 
 # ---------- Menu "one-shot" ----------
 def menu():
