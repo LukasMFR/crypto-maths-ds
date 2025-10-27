@@ -6,6 +6,7 @@
 #  - Euclide étendu pas à pas (traçage) + remontée
 #  - Inverse mod m (avec étapes)
 #  - Résolution de ax ≡ b [m] (tous cas)
+#  - Système modulaire / CRT / Puissance mod m
 #  Auteur : toi ;)
 #  Version menu "one-shot" (pas de boucle)
 # ================================================
@@ -174,6 +175,7 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
     x0 = (inv * b1) % m1
     print("Solution de base : x0 ≡ {} * {} ≡ {}  [ {} ]".format(inv, b1, x0, m1))
     print("Vérif : ({}*{}) % {} = {}  (doit ≡ {})".format(a, x0, m, (a*x0) % m, b % m))
+    sep("Solution")
     print("Forme générale des solutions : x ≡ {}  [ {} ]".format(x0, m1))
     if d > 1:
         print("Donc modulo {}, on obtient {} solutions distinctes :".format(m, d))
@@ -267,7 +269,6 @@ def combine_two_congruences(a1, m1, a2, m2):
     print("x ≡ {}  [ {} ]".format(a, M))
     return True, a, M
 
-
 # ---------- (6) Système modulaire : fusion 2 à 2 ----------
 def solve_system_modular():
     """
@@ -303,7 +304,6 @@ def solve_system_modular():
 
     sep("Solution du système")
     print("x ≡ {}  [ {} ]".format(cur_a, cur_m))
-
 
 # ---------- (7) CRT pour moduli copremiers ----------
 def solve_system_crt_coprime():
@@ -361,7 +361,6 @@ def solve_system_crt_coprime():
 
     sep("Solution CRT")
     print("x ≡ {}  [ {} ]".format(total, M))
-
 
 # ---------- (8) Puissance mod m (exponentiation rapide) ----------
 def pow_mod_verbose(a, k, m):
@@ -452,7 +451,6 @@ def show_course():
     else:
         print("Choix inconnu.")
 
-# ---------- Menu "one-shot" ----------
 # ---------- Menu "one-shot" ----------
 def menu():
     sep("MENU")
