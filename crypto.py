@@ -173,9 +173,9 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
         print("Problème inattendu : a' et m' ne sont pas copremiers.")
         return False, None, None, d
     x0 = (inv * b1) % m1
+    sep("Solution")
     print("Solution de base : x0 ≡ {} * {} ≡ {}  [ {} ]".format(inv, b1, x0, m1))
     print("Vérif : ({}*{}) % {} = {}  (doit ≡ {})".format(a, x0, m, (a*x0) % m, b % m))
-    sep("Solution")
     print("Forme générale des solutions : x ≡ {}  [ {} ]".format(x0, m1))
     if d > 1:
         print("Donc modulo {}, on obtient {} solutions distinctes :".format(m, d))
