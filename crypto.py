@@ -880,9 +880,9 @@ def menu():
     elif choice == "8":
         try:
             a = int(input("a = "))
-            k = int(input("k (exposant) = "))
+            e = int(input("e (exposant) = "))
             m = int(input("m (module > 0) = "))
-            pow_mod_verbose(a, k, m)
+            pow_mod_verbose(a, e, m)
         except:
             print("Entrée invalide.")
     elif choice == "9":
