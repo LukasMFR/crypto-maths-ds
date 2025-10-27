@@ -396,6 +396,107 @@ def pow_mod_verbose(a, k, m):
     sep("Résultat")
     print("{}^{} (mod {}) = {}".format(a, k, m, res))
 
+# ---------- Décomposition en facteurs premiers (méthode "échelle") ----------
+def _format_factorization(fdict):
+    # fdict: {prime: exponent} -> "2^4 * 3 * 7"
+    parts = []
+    for p in sorted(fdict.keys()):
+        e = fdict[p]
+        if e == 1:
+            parts.append(str(p))
+        else:
+            parts.append("{}^{}".format(p, e))
+    return " * ".join(parts) if parts else "1"
+
+def prime_factors_ladder(n):
+    """Affiche l'échelle de divisions et renvoie le dict {p: e}."""
+    if n == 0:
+        print("0 : factorisation non définie (multiple de tous les entiers).")
+        return {}
+    sign = -1 if n < 0 else 1
+    if sign < 0:
+        print("Attention: n < 0 -> on factorise |n| et on garde le signe -1.")
+    n = abs(n)
+    if n == 1:
+        print("1")
+        return {}
+
+    print(n)  # ligne de départ de l'échelle
+    f = {}
+
+    # facteur 2
+    while n % 2 == 0:
+        n //= 2
+        print("{} | {}".format(n, 2))
+        f[2] = f.get(2, 0) + 1
+
+    # facteurs impairs
+    p = 3
+    while p * p <= n:
+        while n % p == 0:
+            n //= p
+            print("{} | {}".format(n, p))
+            f[p] = f.get(p, 0) + 1
+        p += 2
+
+    # reste premier > 1
+    if n > 1:
+        print("1 | {}".format(n))
+        f[n] = f.get(n, 0) + 1
+
+    return f if sign > 0 else ({-1:1} | f) if hasattr(dict, "__or__") else (dict([(-1,1)]) | f)
+
+def show_factorization_and_option_gcd():
+    """Menu mini: 1 ou 2 entiers; affiche l'échelle + factorisation; si 2 -> PGCD via facteurs."""
+    sep("Décomp. facteurs premiers")
+    k = int(input("Nombre d'entiers (1 ou 2) = "))
+    if k not in (1, 2):
+        print("Choix invalide (1 ou 2).")
+        return
+
+    # Premier entier
+    n1 = int(input("n1 = "))
+    sep("n1 : échelle")
+    f1 = prime_factors_ladder(n1)
+    # Affichage n1 = ...
+    absn1 = abs(n1)
+    print("{} = {}".format(n1, _format_factorization({p:e for p,e in f1.items() if p != -1} if -1 in f1 else f1)))
+
+    if k == 1:
+        return
+
+    # Second entier
+    n2 = int(input("n2 = "))
+    sep("n2 : échelle")
+    f2 = prime_factors_ladder(n2)
+    print("{} = {}".format(n2, _format_factorization({p:e for p,e in f2.items() if p != -1} if -1 in f2 else f2)))
+
+    # PGCD par facteurs (exposants minimum)
+    sep("PGCD par facteurs")
+    # on ignore le -1 éventuel pour le PGCD
+    f1pos = {p:e for p,e in f1.items() if p > 1}
+    f2pos = {p:e for p,e in f2.items() if p > 1}
+    common = {}
+    for p in f1pos:
+        if p in f2pos:
+            common[p] = min(f1pos[p], f2pos[p])
+
+    # valeur numérique du pgcd
+    pgcd_val = 1
+    for p, e in common.items():
+        # puissance p**e
+        v = 1
+        for _ in range(e):
+            v *= p
+        pgcd_val *= v
+
+    # Affichage type "PGCD(336,126) = 2 * 3 * 7 = 42"
+    if common:
+        fact_str = _format_factorization(common)
+        print("PGCD({}, {}) = {} = {}".format(n1, n2, fact_str, pgcd_val))
+    else:
+        print("PGCD({}, {}) = 1".format(n1, n2))
+
 # ---------- Cours (formules utiles) : version NumWorks-friendly ----------
 def show_course():
     sep("Cours - Choisir une fiche")
@@ -461,7 +562,8 @@ def menu():
     print("7) Chinois (moduli coprimes)")
     print("8) Puissance mod m")
     print("9) Cours (formules utiles)")
-    print("10) Quitter")
+    print("10) Décomp. facteurs premiers")
+    print("11) Quitter")
     choice = input("> Choix : ").strip()
 
     if choice == "1":
@@ -553,6 +655,11 @@ def menu():
     elif choice == "9":
         show_course()
     elif choice == "10":
+        try:
+            show_factorization_and_option_gcd()
+        except:
+            print("Entrée invalide.")
+    elif choice == "11":
         print("Quitter le programme.")
         return
     else:
