@@ -176,7 +176,8 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
     print("Vérif : ({}*{}) % {} = {}  (doit ≡ {})".format(a, x0, m, (a*x0) % m, b % m))
     print("Forme générale des solutions : x ≡ {}  [ {} ]".format(x0, m1))
     if d > 1:
-        print("Remontée au mod {} : x ≡ {} + {}k, k = 0,1,...,{}.".format(m, x0, m1, d-1))
+        k_values = ", ".join(str(i) for i in range(d))
+        print("Remontée au mod {} : x ≡ {} + {}k, k = {}.".format(m, x0, m1, k_values))
         reps = []
         for k in range(d):
             reps.append((x0 + k*m1) % m)
