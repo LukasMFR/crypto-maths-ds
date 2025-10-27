@@ -13,13 +13,11 @@
 
 # ---------- Outils d'affichage ----------
 def sep(title=None):
-    line = "-" * 38
+    # Affichage compact sur une seule ligne (compatible petit écran)
     if title:
-        print("\n" + line)
-        print(title)
-        print(line)
+        print("------ {} ------".format(title))
     else:
-        print("\n" + line)
+        print("-" * 38)
 
 def show_divisions(divs):
     for (A, B, q, r) in divs:
