@@ -509,41 +509,132 @@ def solve_system_crt_coprime():
     sep("Forme générale")
     print("x = {} + {}*k,  k entier".format(x0, M))
 
-# ---------- (8) Puissance mod m (exponentiation rapide) ----------
-def pow_mod_verbose(a, k, m):
+# ---------- (8) Puissance mod m — méthode "décomposition binaire" ----------
+def pow_mod_verbose(a, e, m):
     """
-    Calcule a^k mod m par carré-multiplication avec étapes.
-    k >= 0, m > 0.
+    Calcule a^e (mod m) en affichant TOUTES les étapes :
+    - écriture binaire de e
+    - décomposition a^e en produit des a^(2^k) utiles
+    - paliers de carrés modulo m
+    - assemblage des facteurs sélectionnés (bits à 1)
     """
-    sep("Puissance modulaire")
+    sep('Puissance mod m — méthode "décomposition binaire"')
+
+    # Garde-fous
     if m <= 0:
         print("Le module doit être > 0")
         return
-    if k < 0:
-        print("Exposant k négatif non pris en charge.")
+    if e < 0:
+        print("Exposant négatif non pris en charge.")
+        return
+    if e == 0:
+        print("Objectif : calculer {}^0  [{}]".format(a, m))
+        print("{}^0 ≡ 1  [{}]".format(a, m))
+        sep("Résultat")
+        print("{}^{} (mod {}) = {}".format(a, e, m, 1 % m))
         return
 
-    a0 = a % m
-    res = 1 % m
-    base = a0
-    exp = k
-    i = 0
+    print("a = {}".format(a))
+    print("e = {}".format(e))
+    print("m = {}".format(m))
+    print("\nObjectif : calculer {}^{}  [{}]".format(a, e, m))
 
-    print("Objectif : {}^{} (mod {})".format(a, k, m))
-    print("Init : res = 1, base = {}, exp = {}".format(base, exp))
+    # Helpers d'affichage compacts
+    def small_rep(x, mod):
+        """Représentant 'court' (utilise x-mod si plus petit en valeur absolue)."""
+        y = x % mod
+        if y > mod // 2:
+            return str(y - mod)  # ex: 11 -> -3 (si m=14)
+        return str(y)
 
-    while exp > 0:
-        bit = exp & 1
-        if bit == 1:
-            res = (res * base) % m
-            print("bit {} = 1 -> res = res*base mod m = {}".format(i, res))
-        base = (base * base) % m
-        exp //= 2
-        print("  base = base^2 mod m = {}, exp -> {}".format(base, exp))
-        i += 1
+    def power2_repr(a_sym, k):
+        """Texte pour a^(2^k) via emboîtement (a^2)^2..."""
+        if k == 0:
+            return "{}".format(a_sym)
+        s = "({}^2)".format(a_sym)
+        for _ in range(1, k):
+            s = "({}^2)".format(s)
+        return s
 
+    # 1) Écriture de l’exposant en base 2
+    bits = []
+    k = 0
+    t = e
+    while t > 0:
+        if (t & 1) == 1:
+            bits.append(k)
+        t >>= 1
+        k += 1
+    bits_desc = sorted(bits, reverse=True)
+
+    # Sommes numériques et en puissances de 2
+    somme_num = " + ".join(str(1 << k) for k in bits_desc)
+    somme_pow2 = " + ".join("2^{}".format(k) for k in bits_desc)
+    print("\n1) Écriture de l’exposant en base 2")
+    print("{} = {} = {}".format(e, somme_num, somme_pow2))
+
+    # 2) Décomposition de la puissance
+    print("\n2) Décomposition de la puissance")
+    droite_pow2 = " + ".join("2^{}".format(k) for k in bits_desc)
+    print("{}^{} = {}^({})".format(a, e, a, droite_pow2))
+    print("     = " + " * ".join("{}^(2^{})".format(a, k) for k in bits_desc))
+    print("     = " + " * ".join(power2_repr(a, k) for k in bits_desc))
+
+    # 3) Calculs modulo m (paliers de carrés)
+    print("\n3) Calculs modulo {} (paliers)".format(m))
+    pow_values = {}  # k -> a^(2^k) mod m
+    # k=0
+    val = a % m
+    pow_values[0] = val
+    print("- {} ≡ {}  [ {} ]".format(a, small_rep(a, m), m))
+    # k>=1
+    max_k = bits_desc[0] if bits_desc else 0
+    prev_val = val
+    for kk in range(1, max_k + 1):
+        raw_sq = (prev_val * prev_val)
+        new_val = raw_sq % m
+        # Affichage du palier kk en s'appuyant sur le palier kk-1 réduit
+        print("- ({})^2  ⇒  ({}^2) = {}  ⇒  ≡ {}  [ {} ]".format(
+            power2_repr(a, kk-1),
+            small_rep(prev_val, m),
+            raw_sq,
+            small_rep(new_val, m),
+            m
+        ))
+        pow_values[kk] = new_val
+        prev_val = new_val
+
+    # 4) Assemblage des facteurs utiles (bits à 1)
+    print("\n4) Assemblage des facteurs utiles ({})".format(", ".join("2^{}".format(k) for k in bits_desc)))
+    # Ligne symbolique
+    print("{}^{} ≡ {}  [ {} ]".format(
+        a, e, " * ".join(power2_repr(a, k) for k in bits_desc), m
+    ))
+    # Ligne numérique (représentants compacts)
+    factors_str = " * ".join(small_rep(pow_values[k], m) for k in bits_desc)
+    print("     ≡ {}  [ {} ]".format(factors_str, m))
+
+    # Multiplication pas à pas
+    acc = 1 % m
+    if bits_desc:
+        # Premier facteur
+        acc = pow_values[bits_desc[0]] % m
+        print("     → {} (premier facteur)".format(small_rep(acc, m)))
+        # Puis enchaînement
+        for kk in bits_desc[1:]:
+            before = acc
+            acc = (acc * pow_values[kk]) % m
+            print("     → ({} * {}) % {} = {}".format(
+                small_rep(before, m),
+                small_rep(pow_values[kk], m),
+                m,
+                small_rep(acc, m)
+            ))
+
+    # 5) Résultat
     sep("Résultat")
-    print("{}^{} (mod {}) = {}".format(a, k, m, res))
+    print("{}^{} (mod {}) = {}".format(a, e, m, acc))
+    print("(Vérif rapide : {} % {} = {})".format(acc, m, acc % m))
 
 # ---------- Décomposition en facteurs premiers (méthode "échelle") ----------
 def _format_factorization(fdict):
