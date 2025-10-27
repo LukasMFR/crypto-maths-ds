@@ -644,7 +644,7 @@ def menu():
     sep("MENU")
     print("1) Bézout / pgcd (avec étapes + remontée)")
     print("2) Inverse mod m (avec remontée)")
-    print("3) Résoudre a x ≡ b [m]")
+    print("3) Équations modulaires (sous-menu)")
     print("4) Tables (Z / Z_n)")
     print("5) Équation ax + c = 0 (Z_n)")
     print("6) Système modulaire (x ≡ a_i [m_i])")
