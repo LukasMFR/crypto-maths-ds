@@ -593,7 +593,7 @@ def pow_mod_verbose(a, e, m):
         raw_sq = (prev_val * prev_val)
         new_val = raw_sq % m
         # Affichage du palier kk en s'appuyant sur le palier kk-1 réduit
-        print("- ({})^2  ⇒  ({}^2) = {}  ⇒  ≡ {}  [ {} ]".format(
+        print("- ({})^2  =>  ({}^2) = {}  =>  ≡ {}  [ {} ]".format(
             power2_repr(a, kk-1),
             small_rep(prev_val, m),
             raw_sq,
@@ -618,12 +618,12 @@ def pow_mod_verbose(a, e, m):
     if bits_desc:
         # Premier facteur
         acc = pow_values[bits_desc[0]] % m
-        print("     → {} (premier facteur)".format(small_rep(acc, m)))
+        print("     -> {} (premier facteur)".format(small_rep(acc, m)))
         # Puis enchaînement
         for kk in bits_desc[1:]:
             before = acc
             acc = (acc * pow_values[kk]) % m
-            print("     → ({} * {}) % {} = {}".format(
+            print("     -> ({} * {}) % {} = {}".format(
                 small_rep(before, m),
                 small_rep(pow_values[kk], m),
                 m,
