@@ -19,12 +19,6 @@ def sep(title=None):
     else:
         print("-" * 38)
 
-def more(prompt="[suite : Entrée] "):
-    try:
-        input(prompt)
-    except:
-        pass
-
 def show_divisions(divs):
     for (A, B, q, r) in divs:
         print("{} = {}*{} + {}".format(A, q, B, r))
@@ -116,7 +110,6 @@ def egcd_verbose(a, b, show=True, show_back=True):
         sep("Algorithme d'Euclide ({} , {})".format(A0, B0))
         show_divisions(divs)
         print("pgcd({}, {}) = {}".format(A0, B0, g))
-        more()
 
     if show and show_back and k >= 2:
         sep("Remontée (combinaison linéaire)")
@@ -138,8 +131,6 @@ def egcd_verbose(a, b, show=True, show_back=True):
     if show:
         print("Coeffs de Bézout : x = {}, y = {}".format(x, y))
         print("Vérif : {}*{} + {}*{} = {}".format(A0, x, B0, y, A0*x + B0*y))
-        if show_back and k >= 2:
-            more()
     return g, x, y
 
 # ---------- Inverse modulaire ----------
@@ -159,7 +150,6 @@ def inv_mod(a, m, show=True):
         sep("Inverse mod {}".format(m))
         print("Inverse trouvé : {}^(-1) ≡ {}  [ {} ]".format(a, inv, m))
         print("Vérif : ({}*{}) % {} = {}".format(a, inv, m, (a*inv) % m))
-        more()
     return True, inv
 
 # ---------- Résolution a x ≡ b [m] ----------
@@ -176,7 +166,6 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
     a1 = a // d; b1 = b // d; m1 = m // d
     print("On réduit : a'={}, b'={}, m'={} (d = {})".format(a1, b1, m1, d))
     print("Nouvelle équation : {} x ≡ {}  [ {} ]".format(a1, b1, m1))
-    more()
     ok, inv = inv_mod(a1, m1, show=True)
     if not ok:
         print("Problème inattendu : a' et m' ne sont pas copremiers.")
