@@ -461,6 +461,7 @@ def menu():
     print("7) Chinois (moduli coprimes)")
     print("8) Puissance mod m")
     print("9) Cours (formules utiles)")
+    print("10) Quitter")
     choice = input("> Choix : ").strip()
 
     if choice == "1":
@@ -551,6 +552,9 @@ def menu():
             print("Entrée invalide.")
     elif choice == "9":
         show_course()
+    elif choice == "10":
+        print("Quitter le programme.")
+        return
     else:
         print("Choix inconnu.")
 
