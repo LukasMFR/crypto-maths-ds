@@ -176,13 +176,13 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
     print("Vérif : ({}*{}) % {} = {}  (doit ≡ {})".format(a, x0, m, (a*x0) % m, b % m))
     print("Forme générale des solutions : x ≡ {}  [ {} ]".format(x0, m1))
     if d > 1:
-        print("Donc modulo {}, on obtient {} solutions distinctes :".format(m, d))
+        print("Remontée au mod {} : x ≡ {} + {}k, k = 0,1,...,{}.".format(m, x0, m1, d-1))
         reps = []
         for k in range(d):
             reps.append((x0 + k*m1) % m)
         reps = sorted(list(set(reps)))
         if list_rep:
-            print("Représentants (mod {}): {}".format(m, reps))
+            print("Représentants (mod {}): {}".format(m, ", ".join(str(r) for r in reps)))
     return True, x0, m1, d
 
 # ---------- Équation affine ax + c = 0 dans Z_n ----------
