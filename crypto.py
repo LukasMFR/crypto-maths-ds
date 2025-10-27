@@ -15,7 +15,7 @@
 def sep(title=None):
     # Affichage compact sur une seule ligne (compatible petit écran)
     if title:
-        print("------ {} ------".format(title))
+        print("--- {} ---".format(title))
     else:
         print("-" * 38)
 
