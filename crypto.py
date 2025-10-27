@@ -195,6 +195,95 @@ def solve_affine_eq(a, c, n, show=True):
     print("Réécriture : {}x ≡ -{} ≡ {}  [ {} ]".format(a, c, b, n))
     return solve_congruence(a, b, n, show=show, list_rep=True)
 
+# ---------- Résolution d'équations : wrappers pour formes générales ----------
+
+def solve_ax_plus_c_eq_b(a, c, b, m):
+    """Résout a x + c ≡ b [m] en affichant la mise en forme puis solve_congruence."""
+    sep("0) Mise en forme / réduction modulo {}".format(m))
+    if (b % m) == 0 and (c % m) != 0:
+        # Cas typique "a x + c ≡ 0"
+        print("{} x ≡ -{} ≡ {}  [ {} ]".format(a, c, (-c) % m, m))
+    elif (c % m) == 0:
+        print("{} x ≡ {}  [ {} ]".format(a, b % m, m))
+    else:
+        print("{} x ≡ {} - {} ≡ {}  [ {} ]".format(a, b % m, c % m, (b - c) % m, m))
+    return solve_congruence(a, (b - c) % m, m, show=True, list_rep=True)
+
+def solve_x_plus_c_eq_b(c, b, m):
+    """Résout x + c ≡ b [m] (affiche la réduction élémentaire puis résout 1*x ≡ b-c [m])."""
+    sep("0) Mise en forme / réduction modulo {}".format(m))
+    print("{} ≡ {}  [ {} ]".format(c, c % m, m))
+    print("{} ≡ {}  [ {} ]".format(b, b % m, m))
+    print("=> x ≡ {}  [ {} ]".format((b - c) % m, m))
+    return solve_congruence(1, (b - c) % m, m, show=True, list_rep=True)
+
+def solve_batch_affine_zero_same_mod():
+    """Résout plusieurs équations du type a_i x + c_i ≡ 0 dans Z/mZ (ex: cas de Z/31Z)."""
+    sep("Résolutions dans Z/mZ")
+    m = int(input("  m (module > 0) = "))
+    if m <= 0:
+        print("Le module doit être > 0")
+        return
+    k = int(input("  nombre d'équations k = "))
+    if k <= 0:
+        print("k doit être >= 1")
+        return
+    for i in range(1, k+1):
+        print("Équation #{} : a x + c = 0".format(i))
+        a = int(input("  a = "))
+        c = int(input("  c = "))
+        # On réutilise la mise en forme optimale pour ce cas
+        sep("Équation {}x + {} = 0  [ {} ]".format(a, c, m))
+        print("Réécriture : {}x ≡ -{} ≡ {}  [ {} ]".format(a, c, (-c) % m, m))
+        solve_congruence(a, (-c) % m, m, show=True, list_rep=True)
+
+def equations_menu_option3():
+    """Sous-menu Option 3 : couvre ax≡b, ax+c≡0, ax+c≡b, x+c≡b, et série dans Z/mZ."""
+    sep("Équations - choisir une forme")
+    print("1) a x ≡ b  [ m ]")
+    print("2) a x + c ≡ 0  [ m ]")
+    print("3) a x + c ≡ b  [ m ]")
+    print("4) x + c ≡ b  [ m ]")
+    print("5) Plusieurs (a_i x + c_i = 0) dans Z/mZ")
+    ch = input("> Choix forme : ").strip()
+
+    try:
+        if ch == "1":
+            a = int(input("a = "))
+            b = int(input("b = "))
+            m = int(input("m (module > 0) = "))
+            solve_congruence(a, b, m, show=True, list_rep=True)
+
+        elif ch == "2":
+            a = int(input("a = "))
+            c = int(input("c = "))
+            m = int(input("m (module > 0) = "))
+            # Cette forme est déjà gérée par solve_affine_eq avec la bonne mise en forme
+            sep("Équation {}x + {} = 0  [ {} ]".format(a, c, m))
+            print("Réécriture : {}x ≡ -{} ≡ {}  [ {} ]".format(a, c, (-c) % m, m))
+            solve_congruence(a, (-c) % m, m, show=True, list_rep=True)
+
+        elif ch == "3":
+            a = int(input("a = "))
+            c = int(input("c = "))
+            b = int(input("b = "))
+            m = int(input("m (module > 0) = "))
+            solve_ax_plus_c_eq_b(a, c, b, m)
+
+        elif ch == "4":
+            c = int(input("c = "))
+            b = int(input("b = "))
+            m = int(input("m (module > 0) = "))
+            solve_x_plus_c_eq_b(c, b, m)
+
+        elif ch == "5":
+            solve_batch_affine_zero_same_mod()
+
+        else:
+            print("Choix inconnu.")
+    except:
+        print("Entrée invalide.")
+
 # ---------- Tables Z / Z_n ----------
 def table_Z(start, end, op):
     if start > end:
@@ -581,13 +670,7 @@ def menu():
         except:
             print("Entrée invalide.")
     elif choice == "3":
-        try:
-            a = int(input("a = "))
-            b = int(input("b = "))
-            m = int(input("m = "))
-            solve_congruence(a, b, m, show=True)
-        except:
-            print("Entrée invalide.")
+        equations_menu_option3()
     elif choice == "4":
         try:
             sep("Tables (Z / Z_n)")
