@@ -394,16 +394,25 @@ def solve_system_modular():
     print("x ≡ {}  [ {} ]".format(cur_a, cur_m))
 
 # ---------- (7) CRT pour moduli copremiers ----------
+# ---------- (7) CRT (méthode du prof — formule directe) ----------
 def solve_system_crt_coprime():
     """
-    Demande k cong. x ≡ ai [mi] avec mi deux à deux copremiers.
-    Construit x via la méthode CRT (M_i, inverses), avec étapes.
+    Système x ≡ ai [mi] avec mi deux à deux copremiers.
+    Affiche la méthode "formule directe" du prof :
+      - Système
+      - Produit total M
+      - Sous-produits Mi = M/mi
+      - Inverses yi : Mi*yi ≡ 1 [mi] (avec réduction Mi % mi)
+      - Construction x ≡ Σ ai*Mi*yi [M]
+      - Calcul des termes, somme S, réduction x0 = S % M
+      - Vérifications et forme générale
     """
-    sep("CRT (moduli copremiers)")
+    sep("CRT (méthode du prof — formule directe)")
     k = int(input("Nombre d'équations k = "))
     if k <= 0:
         print("k doit être >= 1")
         return
+
     residues = []
     moduli = []
     for i in range(1, k+1):
@@ -425,30 +434,80 @@ def solve_system_crt_coprime():
                 print("Utilise l'option (6) Système modulaire (cas général).")
                 return
 
+    # Système
+    print("Système :")
+    for i in range(k):
+        print("x ≡ {}  [ {} ]".format(residues[i], moduli[i]))
+
     # Produit total
     M = 1
     for mi in moduli:
         M *= mi
-    sep("Construction CRT")
-    print("M = produit des modules = {}".format(M))
+    sep("Produit total")
+    prod_str = " * ".join(str(mi) for mi in moduli)
+    print("M = {} = {}".format(prod_str, M))
 
-    total = 0
+    # Sous-produits Mi
+    sep("Sous-produits")
+    Mi_list = []
+    for i in range(k):
+        Mi = M // moduli[i]
+        Mi_list.append(Mi)
+        print("M{} = M / m{} = {}".format(i+1, i+1, Mi))
+
+    # Inverses yi
+    sep("Recherche des inverses (Mi * yi ≡ 1 [mi])")
+    yi_list = []
+    for i in range(k):
+        Mi = Mi_list[i]
+        mi = moduli[i]
+        r = Mi % mi
+        ok, yi = inv_mod(Mi, mi, show=False)  # on ne spamme pas Euclide ici
+        if not ok:
+            print("Impossible de trouver l'inverse de {} modulo {} (devrait être possible ici).".format(Mi, mi))
+            return
+        yi_list.append(yi)
+        print("{}*y{} ≡ 1 [{}] -> {} ≡ {} [{}] -> y{} ≡ {} [{}] => y{} = {}".format(
+            Mi, i+1, mi, Mi, r, mi, i+1, yi, mi, i+1, yi
+        ))
+
+    # Construction (formule CRT)
+    sep("Construction (formule CRT)")
+    terms_str = "  +  ".join("{} * {} * {}".format(residues[i], Mi_list[i], yi_list[i]) for i in range(k))
+    print("x ≡ {}  [ {} ]".format(terms_str, M))
+
+    # Calcul des termes
+    sep("Calcul des termes")
+    terms = []
+    for i in range(k):
+        t = residues[i] * Mi_list[i] * yi_list[i]
+        terms.append(t)
+        print("Terme #{} = {}*{}*{} = {}".format(i+1, residues[i], Mi_list[i], yi_list[i], t))
+
+    # Somme et réduction
+    sep("Somme")
+    S = sum(terms)
+    print("S = {}".format(" + ".join(str(t) for t in terms)), end="")
+    print(" = {}".format(S))
+    sep("Réduction")
+    x0 = S % M
+    print("x0 = {} % {} = {}".format(S, M, x0))
+
+    # Solution et vérifications
+    sep("Solution canonique")
+    print("x ≡ {}  [ {} ]".format(x0, M))
+
+    sep("Vérifications")
     for i in range(k):
         mi = moduli[i]
         ai = residues[i]
-        Mi = M // mi
-        print("\nÉquation #{} : x ≡ {} [ {} ]".format(i+1, ai, mi))
-        print("M{} = M / m{} = {}".format(i+1, i+1, Mi))
-        ok, inv = inv_mod(Mi, mi, show=True)
-        if not ok:
-            print("Impossible de trouver l'inverse (devrait être possible ici).")
-            return
-        term = (ai * inv * Mi) % M
-        print("Terme #{} = a{} * (M{})^(-1) * M{} = {} (mod M)".format(i+1, i+1, i+1, i+1, term))
-        total = (total + term) % M
+        print("{} % {} = {}  (attendu {}){}".format(
+            x0, mi, x0 % mi, ai, "  (ok)" if (x0 % mi) == ai else "  (!!)"
+        ))
 
-    sep("Solution CRT")
-    print("x ≡ {}  [ {} ]".format(total, M))
+    # Forme générale
+    sep("Forme générale")
+    print("x = {} + {}*k,  k entier".format(x0, M))
 
 # ---------- (8) Puissance mod m (exponentiation rapide) ----------
 def pow_mod_verbose(a, k, m):
@@ -649,7 +708,7 @@ def menu():
     print("4) Tables (Z / Z_n)")
     print("5) Équation ax + c = 0 (Z_n)")
     print("6) Système modulaire (x ≡ a_i [m_i])")
-    print("7) Chinois (moduli coprimes)")
+    print("7) CRT (méthode du prof — formule directe)")
     print("8) Puissance mod m")
     print("9) Cours (formules utiles)")
     print("10) Décomp. facteurs premiers")
