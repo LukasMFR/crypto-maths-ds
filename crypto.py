@@ -393,7 +393,6 @@ def solve_system_modular():
     sep("Solution du système")
     print("x ≡ {}  [ {} ]".format(cur_a, cur_m))
 
-# ---------- (7) CRT pour moduli copremiers ----------
 # ---------- (7) CRT (méthode du prof — formule directe) ----------
 def solve_system_crt_coprime():
     """
