@@ -393,7 +393,7 @@ def solve_system_modular():
     sep("Solution du système")
     print("x ≡ {}  [ {} ]".format(cur_a, cur_m))
 
-# ---------- (7) CRT (méthode du prof — formule directe) ----------
+# ---------- (7) CRT (méthode du prof - formule directe) ----------
 def solve_system_crt_coprime():
     """
     Système x ≡ ai [mi] avec mi deux à deux copremiers.
@@ -406,7 +406,7 @@ def solve_system_crt_coprime():
       - Calcul des termes, somme S, réduction x0 = S % M
       - Vérifications et forme générale
     """
-    sep("CRT (méthode du prof — formule directe)")
+    sep("CRT (méthode du prof - formule directe)")
     k = int(input("Nombre d'équations k = "))
     if k <= 0:
         print("k doit être >= 1")
@@ -508,7 +508,7 @@ def solve_system_crt_coprime():
     sep("Forme générale")
     print("x = {} + {}*k,  k entier".format(x0, M))
 
-# ---------- (8) Puissance mod m — méthode "décomposition binaire" ----------
+# ---------- (8) Puissance mod m - méthode "décomposition binaire" ----------
 def pow_mod_verbose(a, e, m):
     """
     Calcule a^e (mod m) en affichant TOUTES les étapes :
@@ -517,7 +517,7 @@ def pow_mod_verbose(a, e, m):
     - paliers de carrés modulo m
     - assemblage des facteurs sélectionnés (bits à 1)
     """
-    sep('Puissance mod m — méthode "décomposition binaire"')
+    sep('Puissance mod m - méthode "décomposition binaire"')
 
     # Garde-fous
     if m <= 0:
@@ -798,7 +798,7 @@ def menu():
     print("4) Tables (Z / Z_n)")
     print("5) Équation ax + c = 0 (Z_n)")
     print("6) Système modulaire (x ≡ a_i [m_i])")
-    print("7) CRT (méthode du prof — formule directe)")
+    print("7) CRT (méthode du prof - formule directe)")
     print("8) Puissance mod m")
     print("9) Cours (formules utiles)")
     print("10) Décomp. facteurs premiers")
