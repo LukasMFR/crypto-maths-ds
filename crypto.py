@@ -1,12 +1,12 @@
 # ================================================
 #  Bézout, inverse modulaire et congruences (NumWorks)
-#  + Tables d'addition/multiplication en Z et Z_n (+ Z_n et Z_n*)
-#  + Résolution d'équations modulaires (ax ≡ b [m])
-#  + Systèmes modulaires et CRT
-#  + Puissance mod m
-#  + Décomposition en facteurs premiers
-#  - Euclide étendu pas à pas (traçage) + remontée
-#  - Inverse mod m (avec étapes)
+#  - Décomposition en facteurs premiers
+#  - PGCD / Bézout (Euclide étendu + remontée)
+#  - Inverse modulaire (avec étapes)
+#  - Équations modulaires (ax ≡ b [m])
+#  - Tables d’addition/multiplication en Z et Z_n (+ Z_n et Z_n*)
+#  - Théorème des restes chinois (CRT) pour systèmes copremiers
+#  - Puissance mod m
 #  Auteur : toi ;)
 #  Version menu "one-shot" (pas de boucle, version allégée)
 # ================================================
