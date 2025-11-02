@@ -334,44 +334,6 @@ def table_Zn(n, op):
     Zn_star = [a for a in range(n) if gcd(a, n) == 1]
     print("Z_{}* = {{ {} }}".format(n, ", ".join([str(x) for x in Zn_star])))
 
-# ---------- Fusion de deux congruences ----------
-def combine_two_congruences(a1, m1, a2, m2):
-    """
-    Combine x ≡ a1 [m1] et x ≡ a2 [m2].
-    Retourne (ok, a, M) avec x ≡ a [M], ou (False, None, None) si incompatible.
-    Affiche les étapes (Euclide sur m1,m2 puis résolution).
-    """
-    sep("Combinaison de deux congruences")
-    print("x ≡ {}  [ {} ]".format(a1, m1))
-    print("x ≡ {}  [ {} ]".format(a2, m2))
-
-    # Étape 1 : d = gcd(m1,m2)
-    d, _, _ = egcd_verbose(m1, m2, show=True, show_back=False)
-
-    # Compatibilité
-    diff = (a2 - a1)
-    if diff % d != 0:
-        print("Incompatible : {} ne divise pas ({}-{}).".format(d, a2, a1))
-        return False, None, None
-
-    # Étape 2 : résoudre m1' * t ≡ (a2-a1)' [m2']
-    m1p = m1 // d
-    m2p = m2 // d
-    rhs = diff // d
-    sep("Réduction pour trouver t")
-    print("On résout : {} * t ≡ {}  [ {} ]".format(m1p, rhs, m2p))
-    ok, t0, mod_t, d_t = solve_congruence(m1p, rhs, m2p, show=True, list_rep=False)
-    if not ok:
-        print("Échec inattendu sur la congruence réduite.")
-        return False, None, None
-
-    # Étape 3 : solution combinée
-    M = (m1 // d) * m2
-    a = (a1 + m1 * t0) % M
-    sep("Solution combinée")
-    print("x ≡ {}  [ {} ]".format(a, M))
-    return True, a, M
-
 # ---------- CRT (méthode du prof - formule directe) ----------
 def solve_system_crt_coprime():
     """
