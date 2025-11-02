@@ -728,34 +728,39 @@ def show_factorization_and_option_gcd():
 # ---------- Menu "one-shot" ----------
 def menu():
     sep("MENU")
-    print("1) Bézout / pgcd (avec étapes + remontée)")
-    print("2) Inverse mod m (avec remontée)")
-    print("3) Équations modulaires (sous-menu)")
-    print("4) Tables (Z / Z_n)")
-    print("5) Système modulaire (x ≡ a_i [m_i])")
-    print("6) CRT (méthode du prof - formule directe)")
-    print("7) Puissance mod m")
-    print("8) Décomp. facteurs premiers")
+    print("1) Décomp. facteurs premiers")
+    print("2) Bézout / pgcd (avec étapes + remontée)")
+    print("3) Inverse mod m (avec remontée)")
+    print("4) Équations modulaires (sous-menu)")
+    print("5) Tables (Z / Z_n)")
+    print("6) Système modulaire (x ≡ a_i [m_i])")
+    print("7) CRT (méthode du prof - formule directe)")
+    print("8) Puissance mod m")
     print("9) Quitter")
     choice = input("> Choix : ").strip()
 
     if choice == "1":
+        try:
+            show_factorization_and_option_gcd()
+        except:
+            print("Entrée invalide.")
+    elif choice == "2":
         try:
             a = int(input("a = "))
             b = int(input("b = "))
             egcd_verbose(a, b, show=True, show_back=True)
         except:
             print("Entrée invalide.")
-    elif choice == "2":
+    elif choice == "3":
         try:
             a = int(input("a = "))
             m = int(input("m = "))
             inv_mod(a, m, show=True)
         except:
             print("Entrée invalide.")
-    elif choice == "3":
-        equations_menu_option3()
     elif choice == "4":
+        equations_menu_option3()
+    elif choice == "5":
         try:
             sep("Tables (Z / Z_n)")
             print("Espace ?")
@@ -792,27 +797,22 @@ def menu():
                 print("Choix d'espace invalide.")
         except:
             print("Entrée invalide.")
-    elif choice == "5":
+    elif choice == "6":
         try:
             solve_system_modular()
         except:
             print("Entrée invalide.")
-    elif choice == "6":
+    elif choice == "7":
         try:
             solve_system_crt_coprime()
         except:
             print("Entrée invalide.")
-    elif choice == "7":
+    elif choice == "8":
         try:
             a = int(input("a = "))
             e = int(input("e (exposant) = "))
             m = int(input("m (module > 0) = "))
             pow_mod_verbose(a, e, m)
-        except:
-            print("Entrée invalide.")
-    elif choice == "8":
-        try:
-            show_factorization_and_option_gcd()
         except:
             print("Entrée invalide.")
     elif choice == "9":
