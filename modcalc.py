@@ -95,7 +95,6 @@ def _format_factorization(fdict):
     return " * ".join(parts) if parts else "1"
 
 def prime_factors_ladder(n):
-    """Affiche l'échelle de divisions et renvoie le dict {p: e}."""
     if n == 0:
         print("0 : factorisation non définie (multiple de tous les entiers).")
         return {}
@@ -239,7 +238,6 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
 # ---------- Résolution d'équations : wrappers pour formes générales ----------
 
 def solve_ax_plus_c_eq_b(a, c, b, m):
-    """Résout a x + c ≡ b [m] en affichant la mise en forme puis solve_congruence."""
     sep("0) Mise en forme / réduction modulo {}".format(m))
     if (b % m) == 0 and (c % m) != 0:
         # Cas typique "a x + c ≡ 0"
@@ -251,7 +249,6 @@ def solve_ax_plus_c_eq_b(a, c, b, m):
     return solve_congruence(a, (b - c) % m, m, show=True, list_rep=True)
 
 def solve_x_plus_c_eq_b(c, b, m):
-    """Résout x + c ≡ b [m] (affiche la réduction élémentaire puis résout 1*x ≡ b-c [m])."""
     sep("0) Mise en forme / réduction modulo {}".format(m))
     print("{} ≡ {}  [ {} ]".format(c, c % m, m))
     print("{} ≡ {}  [ {} ]".format(b, b % m, m))
@@ -259,7 +256,6 @@ def solve_x_plus_c_eq_b(c, b, m):
     return solve_congruence(1, (b - c) % m, m, show=True, list_rep=True)
 
 def equations_menu_option():
-    """Sous-menu des équations modulaires : couvre ax≡b, ax+c≡0, ax+c≡b, x+c≡b."""
     sep("Équations - choisir une forme")
     print("1) a x ≡ b  [ m ]")
     print("2) a x + c ≡ 0  [ m ]")
@@ -336,17 +332,6 @@ def table_Zn(n, op):
 
 # ---------- CRT (méthode du prof - formule directe) ----------
 def solve_system_crt_coprime():
-    """
-    Système x ≡ ai [mi] avec mi deux à deux copremiers.
-    Affiche la méthode "formule directe" du prof :
-      - Système
-      - Produit total M
-      - Sous-produits Mi = M/mi
-      - Inverses yi : Mi*yi ≡ 1 [mi] (avec réduction Mi % mi)
-      - Construction x ≡ Σ ai*Mi*yi [M]
-      - Calcul des termes, somme S, réduction x0 = S % M
-      - Vérifications et forme générale
-    """
     sep("CRT (méthode du prof - formule directe)")
     k = int(input("Nombre d'équations k = "))
     if k <= 0:
@@ -451,13 +436,6 @@ def solve_system_crt_coprime():
 
 # ---------- Puissance mod m - méthode "décomposition binaire" ----------
 def pow_mod_verbose(a, e, m):
-    """
-    Calcule a^e (mod m) en affichant TOUTES les étapes :
-    - écriture binaire de e
-    - décomposition a^e en produit des a^(2^k) utiles
-    - paliers de carrés modulo m
-    - assemblage des facteurs sélectionnés (bits à 1)
-    """
     sep('Puissance mod m - méthode "décomposition binaire"')
 
     # Garde-fous
@@ -481,14 +459,12 @@ def pow_mod_verbose(a, e, m):
 
     # Helpers d'affichage compacts
     def small_rep(x, mod):
-        """Représentant 'court' (utilise x-mod si plus petit en valeur absolue)."""
         y = x % mod
         if y > mod // 2:
             return str(y - mod)  # ex: 11 -> -3 (si m=14)
         return str(y)
 
     def power2_repr(a_sym, k):
-        """Texte pour a^(2^k) via emboîtement (a^2)^2..."""
         if k == 0:
             return "{}".format(a_sym)
         s = "({}^2)".format(a_sym)
@@ -577,7 +553,6 @@ def pow_mod_verbose(a, e, m):
     print("(Vérif rapide : {} % {} = {})".format(acc, m, acc % m))
 
 def show_factorization_and_option_gcd():
-    """Menu mini: 1 ou 2 entiers; affiche l'échelle + factorisation; si 2 -> PGCD via facteurs."""
     sep("Décomp. facteurs premiers")
     k = int(input("Nombre d'entiers (1 ou 2) = "))
     if k not in (1, 2):
