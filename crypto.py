@@ -673,7 +673,7 @@ def menu():
     print("3) Inverse mod m")
     print("4) Équations modulaires")
     print("5) Tables (Z / Z_n)")
-    print("6) CRT (méthode du prof - formule directe)")
+    print("6) CRT (théorème des restes chinois)")
     print("7) Puissance mod m")
     print("8) Quitter")
     choice = input("> Choix : ").strip()
