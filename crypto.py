@@ -372,42 +372,6 @@ def combine_two_congruences(a1, m1, a2, m2):
     print("x ≡ {}  [ {} ]".format(a, M))
     return True, a, M
 
-# ---------- Système modulaire : fusion 2 à 2 ----------
-def solve_system_modular():
-    """
-    Demande k cong. x ≡ ai [mi] et les fusionne 2 à 2 (cas général).
-    """
-    sep("Système modulaire (général)")
-    k = int(input("Nombre d'équations k = "))
-    if k <= 0:
-        print("k doit être >= 1")
-        return
-    residues = []
-    moduli = []
-    for i in range(1, k+1):
-        print("Equation #{} :".format(i))
-        ai = int(input("  a{} = ".format(i)))
-        mi = int(input("  m{} (>0) = ".format(i)))
-        if mi <= 0:
-            print("Module > 0 requis.")
-            return
-        ai = ai % mi
-        residues.append(ai)
-        moduli.append(mi)
-
-    # Fusion progressive
-    cur_a = residues[0]
-    cur_m = moduli[0]
-    for i in range(1, k):
-        ok, new_a, new_m = combine_two_congruences(cur_a, cur_m, residues[i], moduli[i])
-        if not ok:
-            print("=> Système SANS solution.")
-            return
-        cur_a, cur_m = new_a, new_m
-
-    sep("Solution du système")
-    print("x ≡ {}  [ {} ]".format(cur_a, cur_m))
-
 # ---------- CRT (méthode du prof - formule directe) ----------
 def solve_system_crt_coprime():
     """
@@ -709,10 +673,9 @@ def menu():
     print("3) Inverse mod m")
     print("4) Équations modulaires")
     print("5) Tables (Z / Z_n)")
-    print("6) Système modulaire (x ≡ a_i [m_i])")
-    print("7) CRT (méthode du prof - formule directe)")
-    print("8) Puissance mod m")
-    print("9) Quitter")
+    print("6) CRT (méthode du prof - formule directe)")
+    print("7) Puissance mod m")
+    print("8) Quitter")
     choice = input("> Choix : ").strip()
 
     if choice == "1":
@@ -775,15 +738,10 @@ def menu():
             print("Entrée invalide.")
     elif choice == "6":
         try:
-            solve_system_modular()
-        except:
-            print("Entrée invalide.")
-    elif choice == "7":
-        try:
             solve_system_crt_coprime()
         except:
             print("Entrée invalide.")
-    elif choice == "8":
+    elif choice == "7":
         try:
             a = int(input("a = "))
             e = int(input("e (exposant) = "))
@@ -791,7 +749,7 @@ def menu():
             pow_mod_verbose(a, e, m)
         except:
             print("Entrée invalide.")
-    elif choice == "9":
+    elif choice == "8":
         print("Quitter le programme.")
         return
     else:
