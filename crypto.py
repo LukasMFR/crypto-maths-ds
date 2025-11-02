@@ -82,6 +82,56 @@ def gcd(a, b):
         a, b = b, a % b
     return a
 
+# ---------- Décomposition en facteurs premiers (méthode "échelle") ----------
+def _format_factorization(fdict):
+    # fdict: {prime: exponent} -> "2^4 * 3 * 7"
+    parts = []
+    for p in sorted(fdict.keys()):
+        e = fdict[p]
+        if e == 1:
+            parts.append(str(p))
+        else:
+            parts.append("{}^{}".format(p, e))
+    return " * ".join(parts) if parts else "1"
+
+def prime_factors_ladder(n):
+    """Affiche l'échelle de divisions et renvoie le dict {p: e}."""
+    if n == 0:
+        print("0 : factorisation non définie (multiple de tous les entiers).")
+        return {}
+    sign = -1 if n < 0 else 1
+    if sign < 0:
+        print("Attention: n < 0 -> on factorise |n| et on garde le signe -1.")
+    n = abs(n)
+    if n == 1:
+        print("1")
+        return {}
+
+    print(n)  # ligne de départ de l'échelle
+    f = {}
+
+    # facteur 2
+    while n % 2 == 0:
+        n //= 2
+        print("{} | {}".format(n, 2))
+        f[2] = f.get(2, 0) + 1
+
+    # facteurs impairs
+    p = 3
+    while p * p <= n:
+        while n % p == 0:
+            n //= p
+            print("{} | {}".format(n, p))
+            f[p] = f.get(p, 0) + 1
+        p += 2
+
+    # reste premier > 1
+    if n > 1:
+        print("1 | {}".format(n))
+        f[n] = f.get(n, 0) + 1
+
+    return f if sign > 0 else ({-1:1} | f) if hasattr(dict, "__or__") else (dict([(-1,1)]) | f)
+
 # ---------- Euclide étendu avec traçage + remontée ----------
 def egcd_verbose(a, b, show=True, show_back=True):
     A0, B0 = a, b
@@ -623,56 +673,6 @@ def pow_mod_verbose(a, e, m):
     sep("Résultat")
     print("{}^{} (mod {}) = {}".format(a, e, m, acc))
     print("(Vérif rapide : {} % {} = {})".format(acc, m, acc % m))
-
-# ---------- Décomposition en facteurs premiers (méthode "échelle") ----------
-def _format_factorization(fdict):
-    # fdict: {prime: exponent} -> "2^4 * 3 * 7"
-    parts = []
-    for p in sorted(fdict.keys()):
-        e = fdict[p]
-        if e == 1:
-            parts.append(str(p))
-        else:
-            parts.append("{}^{}".format(p, e))
-    return " * ".join(parts) if parts else "1"
-
-def prime_factors_ladder(n):
-    """Affiche l'échelle de divisions et renvoie le dict {p: e}."""
-    if n == 0:
-        print("0 : factorisation non définie (multiple de tous les entiers).")
-        return {}
-    sign = -1 if n < 0 else 1
-    if sign < 0:
-        print("Attention: n < 0 -> on factorise |n| et on garde le signe -1.")
-    n = abs(n)
-    if n == 1:
-        print("1")
-        return {}
-
-    print(n)  # ligne de départ de l'échelle
-    f = {}
-
-    # facteur 2
-    while n % 2 == 0:
-        n //= 2
-        print("{} | {}".format(n, 2))
-        f[2] = f.get(2, 0) + 1
-
-    # facteurs impairs
-    p = 3
-    while p * p <= n:
-        while n % p == 0:
-            n //= p
-            print("{} | {}".format(n, p))
-            f[p] = f.get(p, 0) + 1
-        p += 2
-
-    # reste premier > 1
-    if n > 1:
-        print("1 | {}".format(n))
-        f[n] = f.get(n, 0) + 1
-
-    return f if sign > 0 else ({-1:1} | f) if hasattr(dict, "__or__") else (dict([(-1,1)]) | f)
 
 def show_factorization_and_option_gcd():
     """Menu mini: 1 ou 2 entiers; affiche l'échelle + factorisation; si 2 -> PGCD via facteurs."""
