@@ -1,13 +1,14 @@
 # ================================================
 #  Bézout, inverse modulaire et congruences (NumWorks)
 #  + Tables d'addition/multiplication en Z et Z_n (+ Z_n et Z_n*)
-#  + Équation affine ax + c = 0 dans Z_n
+#  + Résolution d'équations modulaires (ax ≡ b [m])
+#  + Systèmes modulaires et CRT
+#  + Puissance mod m
+#  + Décomposition en facteurs premiers
 #  - Euclide étendu pas à pas (traçage) + remontée
 #  - Inverse mod m (avec étapes)
-#  - Résolution de ax ≡ b [m] (tous cas)
-#  - Système modulaire / CRT / Puissance mod m
 #  Auteur : toi ;)
-#  Version menu "one-shot" (pas de boucle)
+#  Version menu "one-shot" (pas de boucle, version allégée)
 # ================================================
 
 # ---------- Outils d'affichage ----------
