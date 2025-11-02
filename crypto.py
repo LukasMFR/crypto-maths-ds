@@ -258,8 +258,8 @@ def solve_x_plus_c_eq_b(c, b, m):
     print("=> x ≡ {}  [ {} ]".format((b - c) % m, m))
     return solve_congruence(1, (b - c) % m, m, show=True, list_rep=True)
 
-def equations_menu_option3():
-    """Sous-menu Option 3 : couvre ax≡b, ax+c≡0, ax+c≡b, x+c≡b, et série dans Z/mZ."""
+def equations_menu_option():
+    """Sous-menu des équations modulaires : couvre ax≡b, ax+c≡0, ax+c≡b, x+c≡b."""
     sep("Équations - choisir une forme")
     print("1) a x ≡ b  [ m ]")
     print("2) a x + c ≡ 0  [ m ]")
@@ -735,7 +735,7 @@ def menu():
         except:
             print("Entrée invalide.")
     elif choice == "4":
-        equations_menu_option3()
+        equations_menu_option()
     elif choice == "5":
         try:
             sep("Tables (Z / Z_n)")
