@@ -186,16 +186,6 @@ def solve_congruence(a, b, m, show=True, list_rep=True):
             print("Représentants (mod {}): {}".format(m, ", ".join(str(r) for r in reps)))
     return True, x0, m1, d
 
-# ---------- Équation affine ax + c = 0 dans Z_n ----------
-def solve_affine_eq(a, c, n, show=True):
-    sep("Équation {}x + {} = 0  [ {} ]".format(a, c, n))
-    if n <= 0:
-        print("Le module doit être > 0")
-        return False, None, None, None
-    b = (-c) % n
-    print("Réécriture : {}x ≡ -{} ≡ {}  [ {} ]".format(a, c, b, n))
-    return solve_congruence(a, b, n, show=show, list_rep=True)
-
 # ---------- Résolution d'équations : wrappers pour formes générales ----------
 
 def solve_ax_plus_c_eq_b(a, c, b, m):
@@ -259,7 +249,6 @@ def equations_menu_option3():
             a = int(input("a = "))
             c = int(input("c = "))
             m = int(input("m (module > 0) = "))
-            # Cette forme est déjà gérée par solve_affine_eq avec la bonne mise en forme
             sep("Équation {}x + {} = 0  [ {} ]".format(a, c, m))
             print("Réécriture : {}x ≡ -{} ≡ {}  [ {} ]".format(a, c, (-c) % m, m))
             solve_congruence(a, (-c) % m, m, show=True, list_rep=True)
@@ -796,13 +785,12 @@ def menu():
     print("2) Inverse mod m (avec remontée)")
     print("3) Équations modulaires (sous-menu)")
     print("4) Tables (Z / Z_n)")
-    print("5) Équation ax + c = 0 (Z_n)")
-    print("6) Système modulaire (x ≡ a_i [m_i])")
-    print("7) CRT (méthode du prof - formule directe)")
-    print("8) Puissance mod m")
-    print("9) Cours (formules utiles)")
-    print("10) Décomp. facteurs premiers")
-    print("11) Quitter")
+    print("5) Système modulaire (x ≡ a_i [m_i])")
+    print("6) CRT (méthode du prof - formule directe)")
+    print("7) Puissance mod m")
+    print("8) Cours (formules utiles)")
+    print("9) Décomp. facteurs premiers")
+    print("10) Quitter")
     choice = input("> Choix : ").strip()
 
     if choice == "1":
@@ -860,24 +848,15 @@ def menu():
             print("Entrée invalide.")
     elif choice == "5":
         try:
-            print("Résoudre a x + c = 0 dans Z_n :")
-            n = int(input("  n (module > 0) = "))
-            a = int(input("  a = "))
-            c = int(input("  c = "))
-            solve_affine_eq(a, c, n, show=True)
+            solve_system_modular()
         except:
             print("Entrée invalide.")
     elif choice == "6":
         try:
-            solve_system_modular()
-        except:
-            print("Entrée invalide.")
-    elif choice == "7":
-        try:
             solve_system_crt_coprime()
         except:
             print("Entrée invalide.")
-    elif choice == "8":
+    elif choice == "7":
         try:
             a = int(input("a = "))
             e = int(input("e (exposant) = "))
@@ -885,14 +864,14 @@ def menu():
             pow_mod_verbose(a, e, m)
         except:
             print("Entrée invalide.")
-    elif choice == "9":
+    elif choice == "8":
         show_course()
-    elif choice == "10":
+    elif choice == "9":
         try:
             show_factorization_and_option_gcd()
         except:
             print("Entrée invalide.")
-    elif choice == "11":
+    elif choice == "10":
         print("Quitter le programme.")
         return
     else:
