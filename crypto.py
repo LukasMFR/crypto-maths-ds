@@ -734,8 +734,8 @@ def menu():
     print("5) Système modulaire (x ≡ a_i [m_i])")
     print("6) CRT (méthode du prof - formule directe)")
     print("7) Puissance mod m")
-    print("9) Décomp. facteurs premiers")
-    print("10) Quitter")
+    print("8) Décomp. facteurs premiers")
+    print("9) Quitter")
     choice = input("> Choix : ").strip()
 
     if choice == "1":
@@ -809,12 +809,12 @@ def menu():
             pow_mod_verbose(a, e, m)
         except:
             print("Entrée invalide.")
-    elif choice == "9":
+    elif choice == "8":
         try:
             show_factorization_and_option_gcd()
         except:
             print("Entrée invalide.")
-    elif choice == "10":
+    elif choice == "9":
         print("Quitter le programme.")
         return
     else:
