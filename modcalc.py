@@ -332,7 +332,7 @@ def table_Zn(n, op):
 
 # ---------- CRT (méthode du prof - formule directe) ----------
 def solve_system_crt_coprime():
-    sep("CRT (méthode du prof - formule directe)")
+    sep("CRT (formule directe)")
     k = int(input("Nombre d'équations k = "))
     if k <= 0:
         print("k doit être >= 1")
