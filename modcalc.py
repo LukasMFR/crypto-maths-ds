@@ -602,6 +602,73 @@ def show_factorization_and_option_gcd():
     else:
         print("PGCD({}, {}) = 1".format(n1, n2))
 
+# ---------- Wrappers de saisie (fonctions d’entrée utilisateur) ----------
+def run_pgcd_bezout():
+    sep("PGCD / Bézout")
+    try:
+        a = int(input("a = "))
+        b = int(input("b = "))
+        egcd_verbose(a, b, show=True, show_back=True)
+    except:
+        print("Entrée invalide.")
+
+def run_inverse():
+    sep("Inverse mod m")
+    try:
+        a = int(input("a = "))
+        m = int(input("m (module > 0) = "))
+        inv_mod(a, m, show=True)
+    except:
+        print("Entrée invalide.")
+
+def run_tables():
+    sep("Tables (Z / Z_n)")
+    try:
+        print("Espace ?")
+        print("  1 = Z (entiers)")
+        print("  2 = Z_n (modulo n)")
+        space = input("> Choix espace : ").strip()
+
+        print("Opération ?")
+        print("  1 = addition")
+        print("  2 = multiplication")
+        print("  3 = les deux")
+        op_ch = input("> Choix opération : ").strip()
+
+        def do_ops(do_add, do_mul, in_Z, in_Zn):
+            if in_Z:
+                print("Intervalle en Z :")
+                s = int(input("  début = "))
+                e = int(input("  fin   = "))
+                if do_add: table_Z(s, e, "+")
+                if do_mul: table_Z(s, e, "*")
+            else:
+                n = int(input("Module n (>0) : "))
+                if do_add: table_Zn(n, "+")
+                if do_mul: table_Zn(n, "*")
+
+        do_add = (op_ch == "1" or op_ch == "3")
+        do_mul = (op_ch == "2" or op_ch == "3")
+
+        if space == "1":
+            do_ops(do_add, do_mul, True, False)
+        elif space == "2":
+            do_ops(do_add, do_mul, False, True)
+        else:
+            print("Choix d'espace invalide.")
+    except:
+        print("Entrée invalide.")
+
+def run_pow_mod():
+    sep("Puissance mod m")
+    try:
+        a = int(input("a = "))
+        e = int(input("e (exposant) = "))
+        m = int(input("m (module > 0) = "))
+        pow_mod_verbose(a, e, m)
+    except:
+        print("Entrée invalide.")
+
 # ---------- Menu "one-shot" ----------
 def menu():
     sep("MENU")
@@ -616,76 +683,19 @@ def menu():
     choice = input("> Choix : ").strip()
 
     if choice == "1":
-        try:
-            show_factorization_and_option_gcd()
-        except:
-            print("Entrée invalide.")
+        show_factorization_and_option_gcd()
     elif choice == "2":
-        try:
-            a = int(input("a = "))
-            b = int(input("b = "))
-            egcd_verbose(a, b, show=True, show_back=True)
-        except:
-            print("Entrée invalide.")
+        run_pgcd_bezout()
     elif choice == "3":
-        try:
-            a = int(input("a = "))
-            m = int(input("m = "))
-            inv_mod(a, m, show=True)
-        except:
-            print("Entrée invalide.")
+        run_inverse()
     elif choice == "4":
         equations_menu_option()
     elif choice == "5":
-        try:
-            sep("Tables (Z / Z_n)")
-            print("Espace ?")
-            print("  1 = Z (entiers)")
-            print("  2 = Z_n (modulo n)")
-            space = input("> Choix espace : ").strip()
-
-            print("Opération ?")
-            print("  1 = addition")
-            print("  2 = multiplication")
-            print("  3 = les deux")
-            op_ch = input("> Choix opération : ").strip()
-
-            def do_ops(do_add, do_mul, in_Z, in_Zn):
-                if in_Z:
-                    print("Intervalle en Z :")
-                    s = int(input("  début = "))
-                    e = int(input("  fin   = "))
-                    if do_add: table_Z(s, e, "+")
-                    if do_mul: table_Z(s, e, "*")
-                else:
-                    n = int(input("Module n (>0) : "))
-                    if do_add: table_Zn(n, "+")
-                    if do_mul: table_Zn(n, "*")
-
-            do_add = (op_ch == "1" or op_ch == "3")
-            do_mul = (op_ch == "2" or op_ch == "3")
-
-            if space == "1":
-                do_ops(do_add, do_mul, True, False)
-            elif space == "2":
-                do_ops(do_add, do_mul, False, True)
-            else:
-                print("Choix d'espace invalide.")
-        except:
-            print("Entrée invalide.")
+        run_tables()
     elif choice == "6":
-        try:
-            solve_system_crt_coprime()
-        except:
-            print("Entrée invalide.")
+        solve_system_crt_coprime()
     elif choice == "7":
-        try:
-            a = int(input("a = "))
-            e = int(input("e (exposant) = "))
-            m = int(input("m (module > 0) = "))
-            pow_mod_verbose(a, e, m)
-        except:
-            print("Entrée invalide.")
+        run_pow_mod()
     elif choice == "8":
         print("Quitter le programme.")
         return
