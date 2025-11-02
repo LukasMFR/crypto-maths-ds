@@ -258,26 +258,6 @@ def solve_x_plus_c_eq_b(c, b, m):
     print("=> x ≡ {}  [ {} ]".format((b - c) % m, m))
     return solve_congruence(1, (b - c) % m, m, show=True, list_rep=True)
 
-def solve_batch_affine_zero_same_mod():
-    """Résout plusieurs équations du type a_i x + c_i ≡ 0 dans Z/mZ (ex: cas de Z/31Z)."""
-    sep("Résolutions dans Z/mZ")
-    m = int(input("  m (module > 0) = "))
-    if m <= 0:
-        print("Le module doit être > 0")
-        return
-    k = int(input("  nombre d'équations k = "))
-    if k <= 0:
-        print("k doit être >= 1")
-        return
-    for i in range(1, k+1):
-        print("Équation #{} : a x + c = 0".format(i))
-        a = int(input("  a = "))
-        c = int(input("  c = "))
-        # On réutilise la mise en forme optimale pour ce cas
-        sep("Équation {}x + {} = 0  [ {} ]".format(a, c, m))
-        print("Réécriture : {}x ≡ -{} ≡ {}  [ {} ]".format(a, c, (-c) % m, m))
-        solve_congruence(a, (-c) % m, m, show=True, list_rep=True)
-
 def equations_menu_option3():
     """Sous-menu Option 3 : couvre ax≡b, ax+c≡0, ax+c≡b, x+c≡b, et série dans Z/mZ."""
     sep("Équations - choisir une forme")
@@ -285,7 +265,6 @@ def equations_menu_option3():
     print("2) a x + c ≡ 0  [ m ]")
     print("3) a x + c ≡ b  [ m ]")
     print("4) x + c ≡ b  [ m ]")
-    print("5) Plusieurs (a_i x + c_i = 0) dans Z/mZ")
     ch = input("> Choix forme : ").strip()
 
     try:
@@ -315,9 +294,6 @@ def equations_menu_option3():
             b = int(input("b = "))
             m = int(input("m (module > 0) = "))
             solve_x_plus_c_eq_b(c, b, m)
-
-        elif ch == "5":
-            solve_batch_affine_zero_same_mod()
 
         else:
             print("Choix inconnu.")
