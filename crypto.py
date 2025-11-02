@@ -372,7 +372,7 @@ def combine_two_congruences(a1, m1, a2, m2):
     print("x ≡ {}  [ {} ]".format(a, M))
     return True, a, M
 
-# ---------- (6) Système modulaire : fusion 2 à 2 ----------
+# ---------- Système modulaire : fusion 2 à 2 ----------
 def solve_system_modular():
     """
     Demande k cong. x ≡ ai [mi] et les fusionne 2 à 2 (cas général).
@@ -408,7 +408,7 @@ def solve_system_modular():
     sep("Solution du système")
     print("x ≡ {}  [ {} ]".format(cur_a, cur_m))
 
-# ---------- (7) CRT (méthode du prof - formule directe) ----------
+# ---------- CRT (méthode du prof - formule directe) ----------
 def solve_system_crt_coprime():
     """
     Système x ≡ ai [mi] avec mi deux à deux copremiers.
@@ -523,7 +523,7 @@ def solve_system_crt_coprime():
     sep("Forme générale")
     print("x = {} + {}*k,  k entier".format(x0, M))
 
-# ---------- (8) Puissance mod m - méthode "décomposition binaire" ----------
+# ---------- Puissance mod m - méthode "décomposition binaire" ----------
 def pow_mod_verbose(a, e, m):
     """
     Calcule a^e (mod m) en affichant TOUTES les étapes :
