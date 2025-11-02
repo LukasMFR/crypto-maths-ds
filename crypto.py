@@ -2,7 +2,6 @@
 #  Bézout, inverse modulaire et congruences (NumWorks)
 #  + Tables d'addition/multiplication en Z et Z_n (+ Z_n et Z_n*)
 #  + Équation affine ax + c = 0 dans Z_n
-#  + Cours (formules utiles)
 #  - Euclide étendu pas à pas (traçage) + remontée
 #  - Inverse mod m (avec étapes)
 #  - Résolution de ax ≡ b [m] (tous cas)
@@ -725,59 +724,6 @@ def show_factorization_and_option_gcd():
     else:
         print("PGCD({}, {}) = 1".format(n1, n2))
 
-# ---------- Cours (formules utiles) : version NumWorks-friendly ----------
-def show_course():
-    sep("Cours - Choisir une fiche")
-    print("1) Euclide & Bezout")
-    print("2) Inverse mod m")
-    print("3) ax mod m = b")
-    print("4) Zn et Zn*")
-    print("5) Puissances mod")
-    print("6) CRT (restes chinois)")
-    ch = input("> Choix : ").strip()
-
-    sep("Fiche")
-    if ch == "1":
-        print("Euclide & Bezout")
-        print("- gcd(a,b)=g")
-        print("- il existe x,y : a*x+b*y=g")
-        print("- si g=1 => a,b copremiers")
-    elif ch == "2":
-        print("Inverse modulo m")
-        print("- existe ssi gcd(a,m)=1")
-        print("- calcul: Euclide etendu")
-        print("- si p premier:")
-        print("  a^(p-1) mod p = 1")
-        print("  a^(-1) mod p = a^(p-2)")
-    elif ch == "3":
-        print("Resoudre ax mod m = b")
-        print("- d=gcd(a,m)")
-        print("- si d ne divise pas b -> 0 sol")
-        print("- sinon: a'=a/d, b'=b/d, m'=m/d")
-        print("- x0 = inv(a',m')*b' mod m'")
-        print("- solutions: x = x0 mod m'")
-        print("- nb de classes mod m: d")
-    elif ch == "4":
-        print("Zn et Zn*")
-        print("- Zn = {0..n-1}")
-        print("- Zn* = {a in Zn : gcd(a,n)=1}")
-        print("- |Zn*| = phi(n)")
-        print("- si p premier: |Zp*|=p-1")
-        print("- Zp est un corps")
-    elif ch == "5":
-        print("Puissances modulo n")
-        print("- si gcd(a,n)=1 :")
-        print("  a^phi(n) mod n = 1")
-        print("- si p premier :")
-        print("  a^(p-1) mod p = 1 (a!=0 mod p)")
-    elif ch == "6":
-        print("CRT (restes chinois)")
-        print("- si m1,m2 copremiers :")
-        print("  x=a1 (mod m1) et x=a2 (mod m2)")
-        print("  => solution unique mod m1*m2")
-    else:
-        print("Choix inconnu.")
-
 # ---------- Menu "one-shot" ----------
 def menu():
     sep("MENU")
@@ -788,7 +734,6 @@ def menu():
     print("5) Système modulaire (x ≡ a_i [m_i])")
     print("6) CRT (méthode du prof - formule directe)")
     print("7) Puissance mod m")
-    print("8) Cours (formules utiles)")
     print("9) Décomp. facteurs premiers")
     print("10) Quitter")
     choice = input("> Choix : ").strip()
@@ -864,8 +809,6 @@ def menu():
             pow_mod_verbose(a, e, m)
         except:
             print("Entrée invalide.")
-    elif choice == "8":
-        show_course()
     elif choice == "9":
         try:
             show_factorization_and_option_gcd()
