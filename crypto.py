@@ -729,9 +729,9 @@ def show_factorization_and_option_gcd():
 def menu():
     sep("MENU")
     print("1) Décomp. facteurs premiers")
-    print("2) Bézout / pgcd (avec étapes + remontée)")
-    print("3) Inverse mod m (avec remontée)")
-    print("4) Équations modulaires (sous-menu)")
+    print("2) PGCD / Bézout")
+    print("3) Inverse mod m")
+    print("4) Équations modulaires")
     print("5) Tables (Z / Z_n)")
     print("6) Système modulaire (x ≡ a_i [m_i])")
     print("7) CRT (méthode du prof - formule directe)")
